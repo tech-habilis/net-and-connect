@@ -1,4 +1,4 @@
-import axios from "axios";
+import { Resend } from "resend";
 
 export const runtime = "nodejs";
 
@@ -7,63 +7,39 @@ interface SendMagicLinkOptions {
   magicLink: string;
 }
 
-interface BrevoEmailData {
-  sender: {
-    name: string;
-    email: string;
-  };
-  to: Array<{
-    email: string;
-  }>;
-  subject: string;
-  htmlContent: string;
-}
-
-export class BrevoEmailService {
-  private apiKey: string;
+export class ResendEmailService {
+  private resend: Resend;
   private fromEmail: string;
-  private fromName: string;
 
   constructor() {
-    this.apiKey = process.env.BREVO_API_KEY || "";
-    this.fromEmail = process.env.BREVO_FROM_EMAIL || "";
-    this.fromName = process.env.BREVO_FROM_NAME || "";
+    const apiKey = process.env.RESEND_API_KEY;
+    this.fromEmail = process.env.RESEND_FROM || "";
 
-    if (!this.apiKey || !this.fromEmail || !this.fromName) {
+    if (!apiKey || !this.fromEmail) {
       throw new Error(
-        "Missing Brevo configuration. Please check your environment variables."
+        "Missing Resend configuration. Please check your environment variables."
       );
     }
+
+    this.resend = new Resend(apiKey);
   }
 
   async sendMagicLink({ to, magicLink }: SendMagicLinkOptions): Promise<void> {
-    const emailData: BrevoEmailData = {
-      sender: {
-        name: this.fromName,
-        email: this.fromEmail,
-      },
-      to: [
-        {
-          email: to,
-        },
-      ],
-      subject: "Your magic link to sign in",
-      htmlContent: this.generateMagicLinkEmail(magicLink),
-    };
-
     try {
-      const response = await axios.post(
-        "https://api.brevo.com/v3/smtp/email",
-        emailData,
-        {
-          headers: {
-            "api-key": this.apiKey,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const { data, error } = await this.resend.emails.send({
+        from: this.fromEmail,
+        to: [to],
+        subject: "Your magic link to sign in",
+        html: this.generateMagicLinkEmail(magicLink),
+        text: `Sign in to Net&Connect\n\nClick the link below to sign in:\n${magicLink}\n\nThis link will expire in 20 minutes.`,
+      });
 
-      console.log("Magic link email sent successfully:", response.data);
+      if (error) {
+        console.error("Resend error:", error);
+        throw new Error("Failed to send magic link email");
+      }
+
+      console.log("Magic link email sent successfully:", data);
     } catch (error) {
       console.error("Failed to send magic link email:", error);
       throw new Error("Failed to send magic link email");
@@ -126,4 +102,4 @@ export class BrevoEmailService {
   }
 }
 
-export const brevoEmailService = new BrevoEmailService();
+export const resendEmailService = new ResendEmailService();

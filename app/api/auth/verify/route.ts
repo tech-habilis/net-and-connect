@@ -16,8 +16,10 @@ export async function GET(request: NextRequest) {
   const verification = verifyMagicLink(token);
 
   if (!verification.valid) {
+    const errorCode =
+      verification.error === "Token expired" ? "expired" : "invalid-token";
     return NextResponse.redirect(
-      new URL("/sign-in?error=invalid-token", request.url)
+      new URL(`/sign-in?error=${errorCode}`, request.url)
     );
   }
 

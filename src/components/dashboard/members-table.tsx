@@ -10,11 +10,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Mail, Linkedin, Phone } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  User,
+  AtSign,
+  Link,
+  Phone,
+} from "lucide-react";
 import { Member } from "@/types/dashboard.types";
-import { DashboardService } from "@/services/dashboard.service";
+import {
+  DashboardService,
+  MembersPaginationResponse,
+} from "@/services/dashboard.service";
 
 const dashboardService = new DashboardService();
 
@@ -22,40 +30,39 @@ export function MembersTable() {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 9;
+  const [pagination, setPagination] = useState<
+    MembersPaginationResponse["pagination"] | null
+  >(null);
+  const [fallback, setFallback] = useState(false);
+  const itemsPerPage = 5;
+
+  const loadMembers = async (page: number = 1) => {
+    setLoading(true);
+    try {
+      const data = await dashboardService.getMembers(page, itemsPerPage);
+      setMembers(data.members);
+      setPagination(data.pagination);
+      setFallback(data.fallback || false);
+    } catch (error) {
+      console.error("Failed to load members:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const loadMembers = async () => {
-      try {
-        const data = await dashboardService.getMembers();
-        setMembers(data);
-      } catch (error) {
-        console.error("Failed to load members:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadMembers();
-  }, []);
+    loadMembers(currentPage);
+  }, [currentPage]);
 
-  const totalPages = Math.ceil(members.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentMembers = members.slice(startIndex, endIndex);
-
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase();
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
   if (loading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Membres</CardTitle>
+      <Card className="w-full">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-lg font-medium">Membres</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center h-64">
@@ -67,93 +74,128 @@ export function MembersTable() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-xl font-semibold">Membres</CardTitle>
+    <Card className="w-full">
+      <CardHeader className="pb-4">
+        <CardTitle className="text-lg font-medium text-gray-900">
+          Membres
+        </CardTitle>
       </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Membre</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>LinkedIn</TableHead>
-              <TableHead>Phone</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {currentMembers.map((member) => (
-              <TableRow key={member.id}>
-                <TableCell className="flex items-center space-x-3">
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-[#A4D65E]/10 text-[#A4D65E] text-xs">
-                      {getInitials(member.name)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="font-medium">{member.name}</span>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center space-x-2">
-                    <Mail className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm">{member.email}</span>
+      <CardContent className="pt-0">
+        <div className="overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="border-b border-gray-200">
+                <TableHead className="text-xs font-medium text-gray-500 uppercase tracking-wider pb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm" style={{ color: "#77A600" }}>
+                      T
+                    </span>
+                    Membre
                   </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center space-x-2">
-                    <Linkedin className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm text-blue-600 hover:underline cursor-pointer">
+                </TableHead>
+                <TableHead className="text-xs font-medium text-gray-500 uppercase tracking-wider pb-3">
+                  <div className="flex items-center gap-2">
+                    <AtSign className="h-4 w-4" style={{ color: "#77A600" }} />
+                    Email
+                  </div>
+                </TableHead>
+                <TableHead className="text-xs font-medium text-gray-500 uppercase tracking-wider pb-3">
+                  <div className="flex items-center gap-2">
+                    <Link className="h-4 w-4" style={{ color: "#77A600" }} />
+                    LinkedIn
+                  </div>
+                </TableHead>
+                <TableHead className="text-xs font-medium text-gray-500 uppercase tracking-wider pb-3">
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-4 w-4" style={{ color: "#77A600" }} />
+                    Phone
+                  </div>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {members.map((member: Member, index: number) => (
+                <TableRow
+                  key={member.id}
+                  className="border-b border-gray-100 hover:bg-gray-50"
+                >
+                  <TableCell className="py-4">
+                    <span className="text-sm font-medium text-gray-900">
+                      {member.name}
+                    </span>
+                  </TableCell>
+                  <TableCell className="py-4">
+                    <span className="text-sm text-gray-600">
+                      {member.email}
+                    </span>
+                  </TableCell>
+                  <TableCell className="py-4">
+                    <span className="text-sm text-blue-600 hover:text-blue-800 cursor-pointer">
                       {member.linkedin || "https://www.linkedin.com/..."}
                     </span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center space-x-2">
-                    <Phone className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm">{member.phone}</span>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                  </TableCell>
+                  <TableCell className="py-4">
+                    <span className="text-sm text-gray-600">
+                      {member.phone}
+                    </span>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
 
         {/* Pagination */}
-        <div className="flex items-center justify-between mt-4">
-          <div className="text-sm text-gray-500">
-            Pages {currentPage} of {totalPages}
-          </div>
-          <div className="flex space-x-2">
-            <button
-              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-              disabled={currentPage === 1}
-              className="px-3 py-1 text-sm border rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-            >
-              Previous
-            </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+        {pagination && (
+          <div className="flex items-center justify-between mt-6 pt-4">
+            <div className="text-sm text-gray-500 flex items-center gap-2">
+              Pages {pagination.currentPage} of {pagination.totalPages}
+              {/* {fallback && (
+                <span className="text-yellow-600 text-xs">
+                  (Using fallback data)
+                </span>
+              )} */}
+            </div>
+            <div className="flex items-center space-x-2">
               <button
-                key={page}
-                onClick={() => setCurrentPage(page)}
-                className={`px-3 py-1 text-sm border rounded hover:bg-gray-50 ${
-                  currentPage === page
-                    ? "bg-[#A4D65E] text-white border-[#A4D65E]"
-                    : ""
-                }`}
+                onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                disabled={!pagination.hasPrevPage}
+                className="p-2 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {page}
+                <ChevronLeft className="h-4 w-4" />
               </button>
-            ))}
-            <button
-              onClick={() =>
-                setCurrentPage(Math.min(totalPages, currentPage + 1))
-              }
-              disabled={currentPage === totalPages}
-              className="px-3 py-1 text-sm border rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-            >
-              Next
-            </button>
+
+              {Array.from(
+                { length: pagination.totalPages },
+                (_, i) => i + 1
+              ).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => handlePageChange(page)}
+                  className={`min-w-[32px] h-8 px-3 text-sm rounded-md border transition-colors ${
+                    currentPage === page
+                      ? "bg-[#F1F1F1] text-gray-900 border-gray-300"
+                      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+
+              <button
+                onClick={() =>
+                  handlePageChange(
+                    Math.min(pagination.totalPages, currentPage + 1)
+                  )
+                }
+                disabled={!pagination.hasNextPage}
+                className="p-2 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </CardContent>
     </Card>
   );

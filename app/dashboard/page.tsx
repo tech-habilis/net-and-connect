@@ -28,21 +28,19 @@ export default async function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <DashboardHeader user={user} />
 
-      <main className="p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Members Table - Takes 2/3 of the width on large screens */}
-            <div className="lg:col-span-2">
-              <MembersTable />
-            </div>
+      <main>
+        <div className="grid grid-cols-1 lg:grid-cols-3">
+          {/* Members Table - Takes 2/3 of the width on large screens */}
+          <div className="lg:col-span-2 p-6">
+            <MembersTable />
+          </div>
 
-            {/* Events List - Takes 1/3 of the width on large screens */}
-            <div className="lg:col-span-1">
-              <EventsList />
-            </div>
+          {/* Events List - Takes 1/3 of the width on large screens */}
+          <div className="lg:col-span-1">
+            <EventsList />
           </div>
         </div>
       </main>

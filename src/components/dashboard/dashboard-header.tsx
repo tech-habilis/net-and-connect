@@ -1,9 +1,8 @@
 "use client";
 
-import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogOut } from "lucide-react";
+import { Globe, Linkedin, LogOut } from "lucide-react";
+import Image from "next/image";
 
 interface DashboardHeaderProps {
   user?: {
@@ -14,16 +13,15 @@ interface DashboardHeaderProps {
 
 export function DashboardHeader({ user }: DashboardHeaderProps) {
   const handleSignOut = async () => {
-    await signOut({ callbackUrl: "/sign-in" });
+    window.location.href = "/api/auth?req=logout";
   };
 
-  const getInitials = (name?: string | null) => {
-    if (!name) return "U";
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase();
+  const handleSiteClick = () => {
+    window.open("https://net-and-connect.com/", "_blank");
+  };
+
+  const handleLinkedInClick = () => {
+    window.open("https://www.linkedin.com/company/netandconnect/", "_blank");
   };
 
   return (
@@ -31,40 +29,71 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
       <div className="flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center">
-          <div className="bg-[#A4D65E] rounded-full p-2 mr-3">
-            <div className="w-6 h-6 bg-white rounded-full"></div>
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-gray-900">NET &</h1>
-            <h1 className="text-xl font-bold text-gray-900">CONNECT</h1>
+          <div className="flex flex-col">
+            <Image
+              src="/assets/logo.png"
+              alt="Net & Connect"
+              width={120}
+              height={32}
+              className="h-8 w-auto"
+            />
             <p className="text-xs text-gray-500 mt-1">Membres & Événements</p>
           </div>
         </div>
 
-        {/* User Menu */}
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-3">
-            <Avatar className="h-8 w-8">
-              <AvatarFallback className="bg-[#A4D65E]/10 text-[#A4D65E]">
-                {getInitials(user?.name)}
-              </AvatarFallback>
-            </Avatar>
-            <div className="hidden sm:block">
-              <div className="text-sm font-medium text-gray-900">
-                {user?.name || "User"}
-              </div>
-              <div className="text-xs text-gray-500">{user?.email}</div>
-            </div>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
+        {/* Navigation Buttons */}
+        <div className="flex items-centerr">
+          <button
+            onClick={handleSiteClick}
+            className="flex items-center justify-center text-gray-600 hover:text-gray-900 transition-colors cursor-pointer"
+            style={{
+              width: "100px",
+              height: "32px",
+              borderRadius: "6px",
+              paddingTop: "8px",
+              paddingRight: "12px",
+              paddingBottom: "8px",
+              paddingLeft: "12px",
+              gap: "4px",
+              background: "#FAFAFA",
+              border: "1px solid #F2F2F2",
+            }}
+          >
+            <Globe className="h-4 w-4" />
+            <span className="text-sm">Site</span>
+          </button>
+
+          <div className="mx-3 h-8 w-px bg-gray-300"></div>
+
+          <button
+            onClick={handleLinkedInClick}
+            className="flex items-center justify-center text-gray-600 hover:text-gray-900 transition-colors cursor-pointer"
+            style={{
+              width: "100px",
+              height: "32px",
+              borderRadius: "6px",
+              paddingTop: "8px",
+              paddingRight: "12px",
+              paddingBottom: "8px",
+              paddingLeft: "12px",
+              gap: "4px",
+              background: "#FAFAFA",
+              border: "1px solid #F2F2F2",
+            }}
+          >
+            <Linkedin className="h-4 w-4" />
+            <span className="text-sm">LinkedIn</span>
+          </button>
+
+          <div className="mx-3 h-8 w-px bg-gray-300"></div>
+
+          <button
             onClick={handleSignOut}
-            className="flex items-center space-x-2"
+            className="flex items-center space-x-2 px-3 py-2 text-gray-600 hover:text-gray-900 transition-colors cursor-pointer"
           >
             <LogOut className="h-4 w-4" />
-            <span className="hidden sm:inline">Sign out</span>
-          </Button>
+            <span className="text-sm">Logout</span>
+          </button>
         </div>
       </div>
     </header>

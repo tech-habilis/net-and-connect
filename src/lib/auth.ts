@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { PrismaClient } from "@prisma/client";
-import { brevoEmailService } from "./brevo";
+import { resendEmailService } from "./resend";
 
 export const runtime = "nodejs";
 
@@ -16,7 +16,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       name: "Email",
       async sendVerificationRequest({ identifier: email, url }) {
         try {
-          await brevoEmailService.sendMagicLink({
+          await resendEmailService.sendMagicLink({
             to: email,
             magicLink: url,
           });

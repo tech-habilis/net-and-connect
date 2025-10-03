@@ -4,7 +4,7 @@ import {
   verifyMagicLink,
   createAuthCookie,
 } from "@/lib/magic-link";
-import { brevoEmailService } from "@/lib/brevo";
+import { resendEmailService } from "@/lib/resend";
 
 export const runtime = "nodejs";
 
@@ -18,8 +18,10 @@ export async function GET(request: NextRequest) {
     const verification = verifyMagicLink(token);
 
     if (!verification.valid) {
+      const errorCode =
+        verification.error === "Token expired" ? "expired" : "invalid-token";
       return NextResponse.redirect(
-        new URL("/sign-in?error=invalid-token", request.url)
+        new URL(`/sign-in?error=${errorCode}`, request.url)
       );
     }
 
@@ -41,7 +43,16 @@ export async function GET(request: NextRequest) {
   // Handle logout
   if (req === "logout") {
     const response = NextResponse.redirect(new URL("/sign-in", request.url));
-    response.cookies.delete("nc_auth");
+
+    // Delete the auth cookie completely
+    response.cookies.set("nc_auth", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 0, // Expire immediately
+      path: "/",
+    });
+
     return response;
   }
 
@@ -64,8 +75,8 @@ export async function POST(request: NextRequest) {
 
       const magicLink = createMagicLink(email);
 
-      // Check if Brevo is configured
-      if (!process.env.BREVO_API_KEY) {
+      // Check if Resend is configured
+      if (!process.env.RESEND_API_KEY) {
         return NextResponse.json({
           ok: true,
           dev_link: magicLink,
@@ -73,8 +84,8 @@ export async function POST(request: NextRequest) {
         });
       }
 
-      // Send email via Brevo
-      await brevoEmailService.sendMagicLink({
+      // Send email via Resend
+      await resendEmailService.sendMagicLink({
         to: email,
         magicLink,
       });
