@@ -1,0 +1,28 @@
+name: Ads-Amplifier
+on:
+  push:
+    branches:
+      - development
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy Next.js with SSH
+      uses: appleboy/ssh-action@v1.0.1
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        #password: ${{ secrets.PASSWORD }}
+        key: ${{ secrets.SSH_KEY }}
+        port: ${{ secrets.PORT }}
+        script: |
+          set -e
+          cd /staging/ads-simplifier
+          git fetch && git reset --hard HEAD && git pull
+          source ~/.nvm/nvm.sh
+          nvm install 20
+          nvm use 20
+          npm i
+#          npm exec prisma migrate dev
+          npm run build
+          pm2 restart 18

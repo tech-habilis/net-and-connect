@@ -1,0 +1,30 @@
+name: Ibti Monorepo
+on:
+  push:
+    branches:
+      - development
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy Next.js with SSH
+      uses: appleboy/ssh-action@v1.0.1
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        #password: ${{ secrets.PASSWORD }}
+        key: ${{ secrets.SSH_KEY }}
+        port: ${{ secrets.PORT }}
+        script: |
+          set e
+          cd /staging/ibti-monorepo
+          pm2 stop ecosystem.config.js
+          git fetch && git reset --hard HEAD && git pull
+          cd apps/ibti-be
+          source ~/.nvm/nvm.sh
+          nvm install 20
+          nvm use 20
+          npm install -g db-migrate
+          db-migrate up -e prod
+          cd ../..
+          pm2 restart ecosystem.config.js
