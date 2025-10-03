@@ -20,7 +20,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // For dashboard routes, we'll handle auth check on the server side
+  // For dashboard routes, let the page handle auth checking
   if (pathname.startsWith("/dashboard")) {
     return NextResponse.next();
   }

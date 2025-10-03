@@ -1,17 +1,37 @@
 "use server";
 
-import { signIn } from "@/lib/auth";
 import { SignInFormData } from "@/lib/schemas/auth.schema";
-import { redirect } from "next/navigation";
 
 export async function signInAction(data: SignInFormData) {
   try {
-    await signIn("nodemailer", {
-      email: data.email,
-      redirect: false,
-    });
-    redirect("/verify-request");
+    const response = await fetch(
+      `${process.env.NEXTAUTH_URL}/api/auth?req=request-link`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: data.email }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to send magic link");
+    }
+
+    const result = await response.json();
+
+    return {
+      success: true,
+      message: result.dev_link
+        ? `Development mode: ${result.dev_link}`
+        : "Magic link sent to your email!",
+    };
   } catch (error) {
-    throw new Error("Failed to send magic link");
+    console.error("Sign-in error:", error);
+    return {
+      success: false,
+      message: "Failed to send magic link. Please try again.",
+    };
   }
 }

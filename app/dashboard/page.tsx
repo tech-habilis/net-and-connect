@@ -1,5 +1,6 @@
-import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { verifyAuthCookie } from "@/lib/magic-link";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { MembersTable } from "@/components/dashboard/members-table";
 import { EventsList } from "@/components/dashboard/events-list";
@@ -8,15 +9,27 @@ import { EventsList } from "@/components/dashboard/events-list";
 export const runtime = "nodejs";
 
 export default async function DashboardPage() {
-  const session = await auth();
+  const cookieStore = await cookies();
+  const authCookie = cookieStore.get("nc_auth")?.value;
 
-  if (!session?.user) {
+  if (!authCookie) {
     redirect("/sign-in");
   }
 
+  const verification = verifyAuthCookie(authCookie);
+  if (!verification.valid) {
+    redirect("/sign-in");
+  }
+
+  // Create a user object with the email from the cookie
+  const user = {
+    email: verification.email,
+    name: verification.email?.split("@")[0],
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <DashboardHeader user={session.user} />
+      <DashboardHeader user={user} />
 
       <main className="p-6">
         <div className="max-w-7xl mx-auto">

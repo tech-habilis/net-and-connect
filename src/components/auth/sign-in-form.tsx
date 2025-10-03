@@ -13,6 +13,7 @@ import { signInAction } from "@/actions/auth.actions";
 export function SignInForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const form = useForm<SignInFormData>({
     resolver: zodResolver(signInSchema),
@@ -25,7 +26,16 @@ export function SignInForm() {
     try {
       setIsLoading(true);
       setError(null);
-      await signInAction(data);
+      setSuccess(null);
+      
+      const result = await signInAction(data);
+      
+      if (result.success) {
+        setSuccess(result.message);
+        form.reset(); // Clear the form
+      } else {
+        setError(result.message);
+      }
     } catch (error) {
       setError("Failed to send magic link. Please try again.");
     } finally {
@@ -83,9 +93,18 @@ export function SignInForm() {
           )}
         </div>
 
+        {/* Success message */}
+        {success && (
+          <div className="text-sm text-green-600 text-center bg-green-50 p-3 rounded-lg">
+            {success}
+          </div>
+        )}
+
         {/* Error message */}
         {error && (
-          <div className="text-sm text-red-600 text-center">{error}</div>
+          <div className="text-sm text-red-600 text-center bg-red-50 p-3 rounded-lg">
+            {error}
+          </div>
         )}
 
         {/* Submit button */}
