@@ -4,7 +4,7 @@ import {
   verifyMagicLink,
   createAuthCookie,
 } from "@/lib/magic-link";
-import { resendEmailService } from "@/lib/resend";
+import { brevoEmailService } from "@/lib/brevo";
 
 export const runtime = "nodejs";
 
@@ -75,8 +75,8 @@ export async function POST(request: NextRequest) {
 
       const magicLink = createMagicLink(email);
 
-      // Check if Resend is configured
-      if (!process.env.RESEND_API_KEY) {
+      // Check if Brevo is configured
+      if (!process.env.BREVO_API_KEY) {
         return NextResponse.json({
           ok: true,
           dev_link: magicLink,
@@ -84,8 +84,8 @@ export async function POST(request: NextRequest) {
         });
       }
 
-      // Send email via Resend
-      await resendEmailService.sendMagicLink({
+      // Send email via Brevo
+      await brevoEmailService.sendMagicLink({
         to: email,
         magicLink,
       });
