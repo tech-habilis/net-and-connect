@@ -131,7 +131,8 @@ export function MembersTable() {
                   </TableCell>
                   <TableCell className="py-4">
                     <span className="text-sm text-blue-600 hover:text-blue-800 cursor-pointer">
-                      {member.linkedin || "https://www.linkedin.com/..."}
+                      {/* {member.linkedin || "https://www.linkedin.com/..."} */}
+                      -
                     </span>
                   </TableCell>
                   <TableCell className="py-4">

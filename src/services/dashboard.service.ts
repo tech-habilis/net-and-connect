@@ -22,7 +22,7 @@ export interface IDashboardService {
 export class DashboardService implements IDashboardService {
   async getMembers(
     page: number = 1,
-    limit: number = 9
+    limit: number = 10
   ): Promise<MembersPaginationResponse> {
     try {
       const url = new URL("/api/members", window.location.origin);
