@@ -12,7 +12,11 @@ export interface Member {
 export interface Event {
   id: string;
   title: string;
+  description?: string;
   start: string; // ISO format
+  end: string; // ISO format
   location: string;
   url: string;
+  coverImage?: string;
+  timezone?: string;
 }

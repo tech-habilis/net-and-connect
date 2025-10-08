@@ -15,46 +15,64 @@ export function EventsList() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 4,
+    total: 0,
+    totalPages: 0,
+    hasNext: false,
+    hasPrev: false,
+  });
   const [fallback, setFallback] = useState(false);
-  const itemsPerPage = 3;
 
-  useEffect(() => {
-    const loadEvents = async () => {
-      try {
-        const response = await fetch("/api/events?req=events", {
+  const loadEvents = async (page: number = 1, limit: number = 4) => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `/api/events?req=events&page=${page}&limit=${limit}`,
+        {
           method: "GET",
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
         }
+      );
 
-        const data = await response.json();
-        setEvents(data.events || []);
-        setFallback(data.fallback || false);
-      } catch (error) {
-        console.error("Failed to load events:", error);
-      } finally {
-        setLoading(false);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    };
-    loadEvents();
-  }, []);
 
+      const data = await response.json();
+      setEvents(data.events || []);
+      setPagination(data.pagination || pagination);
+      setFallback(data.fallback || false);
+    } catch (error) {
+      console.error("Failed to load events:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadEvents(currentPage, 4);
+  }, [currentPage]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  // Client-side filtering for search
   const filteredEvents = events.filter(
     (event) =>
       event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.location.toLowerCase().includes(searchQuery.toLowerCase())
+      event.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (event.description &&
+        event.description.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-  const totalPages = Math.ceil(filteredEvents.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentEvents = filteredEvents.slice(startIndex, endIndex);
+  // For display, we'll show filtered events (but keep server-side pagination for API calls)
+  const displayEvents = searchQuery ? filteredEvents : events;
 
   const formatEventDate = (isoString: string) => {
     const date = new Date(isoString);
@@ -80,11 +98,17 @@ export function EventsList() {
     return { day, month, dayOfWeek };
   };
 
-  const formatTime = (isoString: string) => {
-    const date = new Date(isoString);
-    const hours = date.getHours().toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-    return `${hours}:${minutes} - 12:00 PM`;
+  const formatTime = (startIsoString: string, endIsoString: string) => {
+    const startDate = new Date(startIsoString);
+    const endDate = new Date(endIsoString);
+
+    const formatSingleTime = (date: Date) => {
+      const hours = date.getHours().toString().padStart(2, "0");
+      const minutes = date.getMinutes().toString().padStart(2, "0");
+      return `${hours}:${minutes}`;
+    };
+
+    return `${formatSingleTime(startDate)} - ${formatSingleTime(endDate)}`;
   };
 
   if (loading) {
@@ -95,9 +119,9 @@ export function EventsList() {
             <CardTitle className="text-lg font-medium text-gray-900">
               Événements à venir
             </CardTitle>
-            <Badge variant="secondary" className="bg-gray-100 text-gray-600">
+            {/* <Badge variant="secondary" className="bg-gray-100 text-gray-600">
               28
-            </Badge>
+            </Badge> */}
           </div>
           <div className="text-sm text-gray-500">Tokens available</div>
         </CardHeader>
@@ -120,7 +144,9 @@ export function EventsList() {
             </CardTitle>
             <div className="text-sm text-gray-500 mt-1">
               Tokens available :{" "}
-              <span className="font-bold">{filteredEvents.length}</span>
+              <span className="font-bold">
+                {searchQuery ? filteredEvents.length : pagination.total}
+              </span>
             </div>
           </div>
           <div className="relative w-48 ">
@@ -137,9 +163,9 @@ export function EventsList() {
       <CardContent className="pt-0">
         {/* Events List */}
         <div className="space-y-3">
-          {currentEvents.map((event, index) => {
+          {displayEvents.map((event) => {
             const { day, month, dayOfWeek } = formatEventDate(event.start);
-            const timeRange = formatTime(event.start);
+            const timeRange = formatTime(event.start, event.end);
 
             return (
               <div
@@ -166,6 +192,11 @@ export function EventsList() {
                   <h3 className="font-medium text-gray-900 text-sm mb-1">
                     {event.title}
                   </h3>
+                  {/* {event.description && (
+                    <p className="text-xs text-gray-600 mb-1 line-clamp-2">
+                      {event.description}
+                    </p>
+                  )} */}
                   <div className="flex items-center text-xs text-gray-500 mb-1">
                     <MapPin className="h-3 w-3 mr-1 flex-shrink-0" />
                     <span className="truncate">{event.location}</span>
@@ -176,6 +207,20 @@ export function EventsList() {
                   </div>
                 </div>
 
+                {/* Cover Image (if available) */}
+                {event.coverImage && (
+                  <div className="w-16 h-16 mr-3 flex-shrink-0">
+                    <img
+                      src={event.coverImage}
+                      alt={event.title}
+                      className="w-full h-full object-cover rounded-lg"
+                      onError={(e) => {
+                        e.currentTarget.style.display = "none";
+                      }}
+                    />
+                  </div>
+                )}
+
                 {/* Arrow */}
                 <div className="group-hover:text-gray-600 transition-colors mr-3">
                   <ChevronRight className="w-5 h-5" />
@@ -185,52 +230,63 @@ export function EventsList() {
           })}
         </div>
 
-        {/* Pagination */}
-        {filteredEvents.length > 0 && (
+        {/* Pagination - only show if not searching and there are multiple pages */}
+        {!searchQuery && pagination.totalPages > 1 && (
           <div className="flex items-center justify-between mt-6 pt-4">
             <div className="text-sm text-gray-500 flex items-center gap-2">
-              Pages {currentPage} of {totalPages}
-              {/* {fallback && (
+              Pages {pagination.page} of {pagination.totalPages} 
+              {/* ({pagination.total} events) */}
+              {fallback && (
                 <span className="text-yellow-600 text-xs">
                   (Using fallback data)
                 </span>
-              )} */}
+              )}
             </div>
             <div className="flex items-center space-x-2">
               <button
-                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
+                onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                disabled={!pagination.hasPrev}
                 className="p-2 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronRight className="h-4 w-4 rotate-180" />
               </button>
 
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                (page) => (
-                  <button
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
-                    className={`min-w-[32px] h-8 px-3 text-sm rounded-md border transition-colors ${
-                      currentPage === page
-                        ? "bg-[#F1F1F1] text-gray-900 border-gray-300"
-                        : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-                    }`}
-                  >
-                    {page}
-                  </button>
-                )
-              )}
+              {Array.from(
+                { length: pagination.totalPages },
+                (_, i) => i + 1
+              ).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => handlePageChange(page)}
+                  className={`min-w-[32px] h-8 px-3 text-sm rounded-md border transition-colors ${
+                    currentPage === page
+                      ? "bg-[#F1F1F1] text-gray-900 border-gray-300"
+                      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
 
               <button
                 onClick={() =>
-                  setCurrentPage(Math.min(totalPages, currentPage + 1))
+                  handlePageChange(
+                    Math.min(pagination.totalPages, currentPage + 1)
+                  )
                 }
-                disabled={currentPage === totalPages}
+                disabled={!pagination.hasNext}
                 className="p-2 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronRight className="h-4 w-4" />
               </button>
             </div>
+          </div>
+        )}
+
+        {/* Search results info */}
+        {searchQuery && (
+          <div className="mt-6 pt-4 text-sm text-gray-500">
+            Found {filteredEvents.length} events matching "{searchQuery}"
           </div>
         )}
       </CardContent>
