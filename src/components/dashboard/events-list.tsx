@@ -17,7 +17,7 @@ export function EventsList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState({
     page: 1,
-    limit: 4,
+    limit: 10,
     total: 0,
     totalPages: 0,
     hasNext: false,
@@ -25,7 +25,7 @@ export function EventsList() {
   });
   const [fallback, setFallback] = useState(false);
 
-  const loadEvents = async (page: number = 1, limit: number = 4) => {
+  const loadEvents = async (page: number = 1, limit: number = 10) => {
     try {
       setLoading(true);
       const response = await fetch(
@@ -55,7 +55,7 @@ export function EventsList() {
   };
 
   useEffect(() => {
-    loadEvents(currentPage, 4);
+    loadEvents(currentPage, 10);
   }, [currentPage]);
 
   const handlePageChange = (page: number) => {
@@ -113,7 +113,7 @@ export function EventsList() {
 
   if (loading) {
     return (
-      <Card className="w-full">
+      <Card className="w-full max-h-[88vh]">
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg font-medium text-gray-900">
@@ -135,7 +135,10 @@ export function EventsList() {
   }
 
   return (
-    <Card className="w-full border-none vh-full" style={{ borderRadius: 0 }}>
+    <Card
+      className="w-full border-none h-[calc(100vh-85px)]"
+      style={{ borderRadius: 0 }}
+    >
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div>
@@ -161,8 +164,17 @@ export function EventsList() {
         </div>
       </CardHeader>
       <CardContent className="pt-0">
-        {/* Events List */}
-        <div className="space-y-3">
+        {/* Events List - Scrollable Container */}
+        <div className="h-[55vh] overflow-y-auto scrollbar-hide space-y-3 pr-2">
+          <style jsx global>{`
+            .scrollbar-hide {
+              -ms-overflow-style: none;
+              scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+              display: none;
+            }
+          `}</style>
           {displayEvents.map((event) => {
             const { day, month, dayOfWeek } = formatEventDate(event.start);
             const timeRange = formatTime(event.start, event.end);
@@ -234,7 +246,7 @@ export function EventsList() {
         {!searchQuery && pagination.totalPages > 1 && (
           <div className="flex items-center justify-between mt-6 pt-4">
             <div className="text-sm text-gray-500 flex items-center gap-2">
-              Pages {pagination.page} of {pagination.totalPages} 
+              Pages {pagination.page} of {pagination.totalPages}
               {/* ({pagination.total} events) */}
               {fallback && (
                 <span className="text-yellow-600 text-xs">
