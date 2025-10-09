@@ -97,14 +97,12 @@ export function MembersTable() {
             }
           `}</style>
 
-          {/* Single Table with unified scroll */}
+          {/* Table with unified horizontal scroll, separate vertical scroll for body */}
           <div className="overflow-x-auto scrollbar-hide">
-            <div
-              className="overflow-y-auto scrollbar-hide"
-              style={{ maxHeight: "400px" }}
-            >
-              <Table className="min-w-[600px]">
-                <TableHeader className="sticky top-0 bg-white z-10">
+            <div className="min-w-[600px]">
+              {/* Fixed Table Header */}
+              <Table>
+                <TableHeader className="bg-white">
                   <TableRow className="border-b border-gray-200">
                     <TableHead className="text-xs font-medium text-gray-500 uppercase tracking-wider pb-3 min-w-[150px]">
                       <div className="flex items-center gap-2">
@@ -143,37 +141,46 @@ export function MembersTable() {
                     </TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody>
-                  {members.map((member: Member, index: number) => (
-                    <TableRow
-                      key={member.id}
-                      className="border-b border-gray-100 hover:bg-gray-50"
-                    >
-                      <TableCell className="py-4 min-w-[150px]">
-                        <span className="text-sm font-medium text-gray-900">
-                          {member.name}
-                        </span>
-                      </TableCell>
-                      <TableCell className="py-4 min-w-[200px]">
-                        <span className="text-sm text-gray-600">
-                          {member.email}
-                        </span>
-                      </TableCell>
-                      <TableCell className="py-4 min-w-[120px]">
-                        <span className="text-sm text-blue-600 hover:text-blue-800 cursor-pointer">
-                          {/* {member.linkedin || "https://www.linkedin.com/..."} */}
-                          -
-                        </span>
-                      </TableCell>
-                      <TableCell className="py-4 min-w-[130px]">
-                        <span className="text-sm text-gray-600">
-                          {member.phone}
-                        </span>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
               </Table>
+
+              {/* Scrollable Table Body */}
+              <div
+                className="overflow-y-auto scrollbar-hide"
+                style={{ maxHeight: "300px" }}
+              >
+                <Table>
+                  <TableBody>
+                    {members.map((member: Member, index: number) => (
+                      <TableRow
+                        key={member.id}
+                        className="border-b border-gray-100 hover:bg-gray-50"
+                      >
+                        <TableCell className="py-4 min-w-[150px]">
+                          <span className="text-sm font-medium text-gray-900">
+                            {member.name}
+                          </span>
+                        </TableCell>
+                        <TableCell className="py-4 min-w-[200px]">
+                          <span className="text-sm text-gray-600">
+                            {member.email}
+                          </span>
+                        </TableCell>
+                        <TableCell className="py-4 min-w-[120px]">
+                          <span className="text-sm text-blue-600 hover:text-blue-800 cursor-pointer">
+                            {/* {member.linkedin || "https://www.linkedin.com/..."} */}
+                            -
+                          </span>
+                        </TableCell>
+                        <TableCell className="py-4 min-w-[130px]">
+                          <span className="text-sm text-gray-600">
+                            {member.phone}
+                          </span>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           </div>
         </div>
