@@ -24,4 +24,4 @@ jobs:
           nvm use 20
           npm i
           npm run build
-          pm2 restart 13
+          pm2 restart net&connect --update-env
