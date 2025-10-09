@@ -25,7 +25,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
   };
 
   return (
-    <header className="border-b bg-white px-6 py-4">
+    <header className="border-b bg-white px-4 sm:px-6 py-4">
       <div className="flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center">
@@ -35,14 +35,16 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
               alt="Net & Connect"
               width={120}
               height={32}
-              className="h-8 w-auto"
+              className="h-6 sm:h-8 w-auto"
             />
-            <p className="text-xs text-gray-500 mt-1">Membres & Événements</p>
+            <p className="text-xs text-gray-500 mt-1 hidden sm:block">
+              Membres & Événements
+            </p>
           </div>
         </div>
 
         {/* Navigation Buttons */}
-        <div className="flex items-centerr">
+        <div className="flex items-center space-x-1 sm:space-x-0">
           <button
             onClick={handleSiteClick}
             className="flex items-center justify-center text-gray-600 hover:text-gray-900 transition-colors cursor-pointer"
@@ -60,10 +62,10 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
             }}
           >
             <Globe className="h-4 w-4" />
-            <span className="text-sm">Site</span>
+            <span className="text-sm hidden sm:block">Site</span>
           </button>
 
-          <div className="mx-3 h-8 w-px bg-gray-300"></div>
+          <div className="mx-1 sm:mx-3 h-8 w-px bg-gray-300"></div>
 
           <button
             onClick={handleLinkedInClick}
@@ -82,10 +84,10 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
             }}
           >
             <Linkedin className="h-4 w-4" />
-            <span className="text-sm">LinkedIn</span>
+            <span className="text-sm hidden sm:block">LinkedIn</span>
           </button>
 
-          <div className="mx-3 h-8 w-px bg-gray-300"></div>
+          <div className="mx-1 sm:mx-3 h-8 w-px bg-gray-300"></div>
 
           <button
             onClick={handleSignOut}
