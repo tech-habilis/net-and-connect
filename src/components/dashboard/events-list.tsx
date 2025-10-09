@@ -163,9 +163,12 @@ export function EventsList() {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="pt-0">
-        {/* Events List - Scrollable Container */}
-        <div className="h-[55vh] overflow-y-auto scrollbar-hide space-y-3 pr-2">
+      <CardContent className="pt-0 flex flex-col h-[calc(100vh-85px-125px)]">
+        {/* Events List - Scrollable Container with fixed height */}
+        <div
+          className="overflow-y-auto scrollbar-hide space-y-3 pr-2"
+          style={{ height: "calc(100vh - 85px - 125px - 80px)" }}
+        >
           <style jsx global>{`
             .scrollbar-hide {
               -ms-overflow-style: none;
@@ -242,9 +245,9 @@ export function EventsList() {
           })}
         </div>
 
-        {/* Pagination - only show if not searching and there are multiple pages */}
+        {/* Pagination - Fixed position at bottom */}
         {!searchQuery && pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between mt-6 pt-4">
+          <div className="flex items-center justify-between pt-4 pb-2 mt-4">
             <div className="text-sm text-gray-500 flex items-center gap-2">
               Pages {pagination.page} of {pagination.totalPages}
               {/* ({pagination.total} events) */}
@@ -295,9 +298,9 @@ export function EventsList() {
           </div>
         )}
 
-        {/* Search results info */}
+        {/* Search results info - Fixed position at bottom */}
         {searchQuery && (
-          <div className="mt-6 pt-4 text-sm text-gray-500">
+          <div className="pt-4 pb-2 text-sm text-gray-500 border-t border-gray-200 mt-4">
             Found {filteredEvents.length} events matching "{searchQuery}"
           </div>
         )}

@@ -34,7 +34,7 @@ export function MembersTable() {
     MembersPaginationResponse["pagination"] | null
   >(null);
   const [fallback, setFallback] = useState(false);
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
 
   const loadMembers = async (page: number = 1) => {
     setLoading(true);
@@ -60,102 +60,134 @@ export function MembersTable() {
 
   if (loading) {
     return (
-      <Card className="w-full">
-        <CardHeader className="pb-4">
+      <Card
+        className="h-full border-none flex flex-col"
+        style={{ borderRadius: 0 }}
+      >
+        <CardHeader className="pb-4 flex-shrink-0">
           <CardTitle className="text-lg font-medium">Membres</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#A4D65E]"></div>
-          </div>
+        <CardContent className="flex-1 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#A4D65E]"></div>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="w-full">
-      <CardHeader className="pb-4">
+    <Card
+      className="lg:h-[calc(100vh-85px-48px)] border-none flex flex-col py-3"
+      style={{ borderRadius: 0 }}
+    >
+      <CardHeader className="pb-4 flex-shrink-0">
         <CardTitle className="text-lg font-medium text-gray-900">
           Membres
         </CardTitle>
       </CardHeader>
-      <CardContent className="pt-0">
-        <div className="overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow className="border-b border-gray-200">
-                <TableHead className="text-xs font-medium text-gray-500 uppercase tracking-wider pb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm" style={{ color: "#77A600" }}>
-                      T
-                    </span>
-                    Membre
-                  </div>
-                </TableHead>
-                <TableHead className="text-xs font-medium text-gray-500 uppercase tracking-wider pb-3">
-                  <div className="flex items-center gap-2">
-                    <AtSign className="h-4 w-4" style={{ color: "#77A600" }} />
-                    Email
-                  </div>
-                </TableHead>
-                <TableHead className="text-xs font-medium text-gray-500 uppercase tracking-wider pb-3">
-                  <div className="flex items-center gap-2">
-                    <Link className="h-4 w-4" style={{ color: "#77A600" }} />
-                    LinkedIn
-                  </div>
-                </TableHead>
-                <TableHead className="text-xs font-medium text-gray-500 uppercase tracking-wider pb-3">
-                  <div className="flex items-center gap-2">
-                    <Phone className="h-4 w-4" style={{ color: "#77A600" }} />
-                    Phone
-                  </div>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {members.map((member: Member, index: number) => (
-                <TableRow
-                  key={member.id}
-                  className="border-b border-gray-100 hover:bg-gray-50"
-                >
-                  <TableCell className="py-4">
-                    <span className="text-sm font-medium text-gray-900">
-                      {member.name}
-                    </span>
-                  </TableCell>
-                  <TableCell className="py-4">
-                    <span className="text-sm text-gray-600">
-                      {member.email}
-                    </span>
-                  </TableCell>
-                  <TableCell className="py-4">
-                    <span className="text-sm text-blue-600 hover:text-blue-800 cursor-pointer">
-                      {/* {member.linkedin || "https://www.linkedin.com/..."} */}
-                      -
-                    </span>
-                  </TableCell>
-                  <TableCell className="py-4">
-                    <span className="text-sm text-gray-600">
-                      {member.phone}
-                    </span>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+      <CardContent className="pt-0 flex flex-col h-full">
+        {/* Table Container */}
+        <div className="flex flex-col flex-1">
+          <style jsx global>{`
+            .scrollbar-hide {
+              -ms-overflow-style: none;
+              scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+              display: none;
+            }
+          `}</style>
+
+          {/* Single Table with unified scroll */}
+          <div className="overflow-x-auto scrollbar-hide">
+            <div
+              className="overflow-y-auto scrollbar-hide"
+              style={{ maxHeight: "400px" }}
+            >
+              <Table className="min-w-[600px]">
+                <TableHeader className="sticky top-0 bg-white z-10">
+                  <TableRow className="border-b border-gray-200">
+                    <TableHead className="text-xs font-medium text-gray-500 uppercase tracking-wider pb-3 min-w-[150px]">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm" style={{ color: "#77A600" }}>
+                          T
+                        </span>
+                        Membre
+                      </div>
+                    </TableHead>
+                    <TableHead className="text-xs font-medium text-gray-500 uppercase tracking-wider pb-3 min-w-[200px]">
+                      <div className="flex items-center gap-2">
+                        <AtSign
+                          className="h-4 w-4"
+                          style={{ color: "#77A600" }}
+                        />
+                        Email
+                      </div>
+                    </TableHead>
+                    <TableHead className="text-xs font-medium text-gray-500 uppercase tracking-wider pb-3 min-w-[120px]">
+                      <div className="flex items-center gap-2">
+                        <Link
+                          className="h-4 w-4"
+                          style={{ color: "#77A600" }}
+                        />
+                        LinkedIn
+                      </div>
+                    </TableHead>
+                    <TableHead className="text-xs font-medium text-gray-500 uppercase tracking-wider pb-3 min-w-[130px]">
+                      <div className="flex items-center gap-2">
+                        <Phone
+                          className="h-4 w-4"
+                          style={{ color: "#77A600" }}
+                        />
+                        Phone
+                      </div>
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {members.map((member: Member, index: number) => (
+                    <TableRow
+                      key={member.id}
+                      className="border-b border-gray-100 hover:bg-gray-50"
+                    >
+                      <TableCell className="py-4 min-w-[150px]">
+                        <span className="text-sm font-medium text-gray-900">
+                          {member.name}
+                        </span>
+                      </TableCell>
+                      <TableCell className="py-4 min-w-[200px]">
+                        <span className="text-sm text-gray-600">
+                          {member.email}
+                        </span>
+                      </TableCell>
+                      <TableCell className="py-4 min-w-[120px]">
+                        <span className="text-sm text-blue-600 hover:text-blue-800 cursor-pointer">
+                          {/* {member.linkedin || "https://www.linkedin.com/..."} */}
+                          -
+                        </span>
+                      </TableCell>
+                      <TableCell className="py-4 min-w-[130px]">
+                        <span className="text-sm text-gray-600">
+                          {member.phone}
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
         </div>
 
-        {/* Pagination */}
+        {/* Pagination - Sticky at bottom */}
         {pagination && (
-          <div className="flex items-center justify-between mt-6 pt-4">
+          <div className="flex items-center justify-between pt-3 pb-2 border-t border-gray-200 mt-auto">
             <div className="text-sm text-gray-500 flex items-center gap-2">
               Pages {pagination.currentPage} of {pagination.totalPages}
               {/* {fallback && (
-                <span className="text-yellow-600 text-xs">
-                  (Using fallback data)
-                </span>
-              )} */}
+                  <span className="text-yellow-600 text-xs">
+                    (Using fallback data)
+                  </span>
+                )} */}
             </div>
             <div className="flex items-center space-x-2">
               <button
