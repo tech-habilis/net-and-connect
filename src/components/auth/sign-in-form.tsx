@@ -27,9 +27,9 @@ export function SignInForm() {
       setIsLoading(true);
       setError(null);
       setSuccess(null);
-      
+
       const result = await signInAction(data);
-      
+
       if (result.success) {
         setSuccess(result.message);
         form.reset(); // Clear the form
@@ -44,54 +44,37 @@ export function SignInForm() {
   };
 
   return (
-    <div className="w-full">
-      {/* User icon */}
-      <div className="flex justify-center mb-6">
-        <div
-          className="w-[50px] h-[50px] border border-[#EDEDED] flex items-center justify-center"
-          style={{ borderRadius: "10px" }}
-        >
-          <Image
-            src="/assets/auth/user-square.png"
-            alt="User login"
-            width={30}
-            height={30}
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      {/* Email input container */}
+      <div
+        className="w-full mb-6 backdrop-blur-sm p-4 md:p-6 lg:p-8 rounded-2xl border border-gray-600/50 md:px-6 md:py-8 lg:px-9 lg:py-12 lg:min-w-[470px]"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(23, 23, 23, 0.5) 0%, rgba(23, 23, 23, 0.7) 19%, rgba(23, 23, 23, 1) 52%, rgba(23, 23, 23, 0.7) 78%, rgba(23, 23, 23, 0.5) 100%)",
+        }}
+      >
+        <div className="relative mb-3">
+          <input
+            {...form.register("email")}
+            type="email"
+            className="w-full px-4 py-3 md:py-4 bg-black/40 border-2 border-white/60 rounded-xl text-white placeholder-transparent focus:outline-none focus:border-white transition-all duration-200 text-sm md:text-base"
+            placeholder="email"
+            id="email"
           />
-        </div>
-      </div>
-
-      {/* Sign in title and description */}
-      <div className="text-center mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-2">Sign in</h1>
-        <p className="text-gray-500 text-sm leading-relaxed">
-          Enter your email to continue enjoying a<br />
-          seamless experience.
-        </p>
-      </div>
-
-      {/* Form */}
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        {/* Email field */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Email
+          <label
+            htmlFor="email"
+            className="absolute left-4 -top-3 bg-[#171717] rounded-md px-2 text-white text-xs md:text-sm font-medium tracking-wide"
+          >
+            EMAIL*
           </label>
-          <div className="relative">
-            <Mail className="absolute left-4 top-4 h-4 w-4 text-gray-400" />
-            <Input
-              {...form.register("email")}
-              type="email"
-              placeholder="you@example.com"
-              className="pl-10 h-12 border-gray-300 focus:border-[#A4D65E] focus:ring-[#A4D65E]"
-              style={{ borderRadius: "24px" }}
-            />
-          </div>
-          {form.formState.errors.email && (
-            <p className="text-red-500 text-xs mt-1">
-              {form.formState.errors.email.message}
-            </p>
-          )}
         </div>
+
+        {/* Form validation error */}
+        {form.formState.errors.email && (
+          <p className="text-red-400 text-xs mt-2 px-1">
+            {form.formState.errors.email.message}
+          </p>
+        )}
 
         {/* Success message */}
         {success && (
@@ -107,16 +90,15 @@ export function SignInForm() {
           </div>
         )}
 
-        {/* Submit button */}
-        <Button
+        {/* Sign in button */}
+        <button
           type="submit"
-          className="w-full h-12 bg-[#C4EF55] hover:bg-[#8BC53E] text-black font-medium text-base"
-          style={{ borderRadius: "24px" }}
           disabled={isLoading}
+          className="w-full cursor-pointer bg-[#DDFF80] hover:bg-[#D4F573] text-black font-bold py-3 md:py-4 px-6 rounded-md transition-all duration-200 flex items-center justify-center text-xs md:text-sm tracking-wide mt-8 md:mt-12 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isLoading ? "Sending..." : "Connexion"}
-        </Button>
-      </form>
-    </div>
+          {isLoading ? "ENVOI EN COURS..." : "ENVOYER MON LIEN DE CONNEXION"}
+        </button>
+      </div>
+    </form>
   );
 }
