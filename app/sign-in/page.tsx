@@ -1,5 +1,7 @@
 import Image from "next/image";
 import { SignInForm } from "@/components/auth/sign-in-form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface SignInPageProps {
   searchParams: { [key: string]: string | string[] | undefined };
@@ -22,54 +24,64 @@ export default function SignInPage({ searchParams }: SignInPageProps) {
   };
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left side - Sign in form */}
-      <div className="flex-1 bg-white flex items-center justify-center px-8">
-        <div className="w-full max-w-sm">
+    <div
+      className="min-h-screen relative bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: "url(/assets/auth/login-bg-min.png)" }}
+    >
+      {/* Complex gradient overlay with yellow tint on top */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: `
+            radial-gradient(ellipse at center, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.8) 70%, rgba(0,0,0,0.9) 100%),
+            linear-gradient(to bottom, rgba(255,255,0,0.08) 0%, rgba(255,255,0,0.03) 15%, rgba(0,0,0,0.5) 30%, rgba(0,0,0,0.7) 60%, rgba(0,0,0,0.85) 100%)
+          `,
+        }}
+      ></div>
+
+      {/* Content container */}
+      <div className="relative z-10 min-h-screen flex flex-col">
+        {/* Header with logo */}
+        <div className="flex justify-center pt-4 md:pt-8 mb-4 md:mb-10 px-4">
+          <Image
+            src="/assets/logo.png"
+            alt="NET&CONNECT Logo"
+            width={200}
+            height={50}
+            className="object-contain w-40 h-auto md:w-52"
+            unoptimized
+          />
+        </div>
+
+        {/* Main content */}
+        <div className="flex-1 flex flex-col items-center justify-center px-4 md:px-8 max-w-sm md:max-w-md lg:max-w-lg mx-auto w-full">
+          {/* Title */}
+          <h1 className="text-white text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-6 md:mb-9 leading-tight tracking-wide">
+            CONNECTEZ-VOUS
+          </h1>
+
           {/* Error message display */}
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <div className="text-sm text-red-600">
+            <div className="mb-6 p-4 bg-red-500/20 border border-red-400/30 rounded-lg w-full backdrop-blur-sm">
+              <div className="text-sm text-red-200">
                 {getErrorMessage(error)}
               </div>
             </div>
           )}
+
           <SignInForm />
         </div>
-      </div>
 
-      {/* Right side - Hero image with space from corners */}
-      <div className="hidden lg:flex flex-1 relative p-4">
-        <div
-          className="relative w-full h-full rounded-2xl overflow-hidden bg-cover bg-center"
-          style={{ backgroundImage: "url(/assets/auth/login.jpg)" }}
-        >
-          {/* Dark overlay */}
-          <div className="absolute inset-0 bg-black/40"></div>
-
-          {/* Logo in top-left */}
-          <div className="absolute top-6 left-6 z-10">
-            <Image
-              src="/assets/logo-green.png"
-              alt="Net & Connect Logo"
-              width={120}
-              height={32}
-            />
-            <div className="text-gray-300 text-sm">Membres & Événements</div>
-          </div>
-
-          {/* Caption at bottom */}
-          <div className="absolute bottom-6 left-6 right-6 z-10">
-            <h2 className="text-white text-2xl font-bold mb-3">
-              Connectez-vous à votre Hub Padel
-            </h2>
-            <p className="text-white text-sm leading-relaxed">
-              Connectez-vous pour gérer vos matchs, vos clients et la croissance
-              de votre activité <br />— le tout en un seul endroit. Restez
-              connecté à votre communauté du padel et faites
-              <br /> passer votre entreprise au niveau supérieur.
-            </p>
-          </div>
+        {/* Watermark section - outside main content to avoid width constraints */}
+        <div className="flex justify-center px-4 mb-12 md:mb-24">
+          <Image
+            src="/assets/auth/login-watermark.png"
+            alt="NET&CONNECT Watermark"
+            width={800}
+            height={140}
+            className="object-contain w-full max-w-xs md:max-w-md lg:max-w-2xl h-auto"
+            unoptimized
+          />
         </div>
       </div>
     </div>

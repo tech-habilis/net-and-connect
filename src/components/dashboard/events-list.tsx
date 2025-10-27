@@ -1,43 +1,22 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { MapPin, Clock, Search, ChevronRight } from "lucide-react";
 import { Event } from "@/types/dashboard.types";
-import { DashboardService } from "@/services/dashboard.service";
-
-const dashboardService = new DashboardService();
 
 export function EventsList() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pagination, setPagination] = useState({
-    page: 1,
-    limit: 10,
-    total: 0,
-    totalPages: 0,
-    hasNext: false,
-    hasPrev: false,
-  });
-  const [fallback, setFallback] = useState(false);
 
-  const loadEvents = async (page: number = 1, limit: number = 10) => {
+  const loadEvents = async () => {
     try {
       setLoading(true);
-      const response = await fetch(
-        `/api/events?req=events&page=${page}&limit=${limit}`,
-        {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`/api/events?req=events&page=1&limit=20`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -45,8 +24,6 @@ export function EventsList() {
 
       const data = await response.json();
       setEvents(data.events || []);
-      setPagination(data.pagination || pagination);
-      setFallback(data.fallback || false);
     } catch (error) {
       console.error("Failed to load events:", error);
     } finally {
@@ -55,47 +32,28 @@ export function EventsList() {
   };
 
   useEffect(() => {
-    loadEvents(currentPage, 10);
-  }, [currentPage]);
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  // Client-side filtering for search
-  const filteredEvents = events.filter(
-    (event) =>
-      event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (event.description &&
-        event.description.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
-
-  // For display, we'll show filtered events (but keep server-side pagination for API calls)
-  const displayEvents = searchQuery ? filteredEvents : events;
+    loadEvents();
+  }, []);
 
   const formatEventDate = (isoString: string) => {
     const date = new Date(isoString);
     const day = date.getDate().toString().padStart(2, "0");
     const monthNames = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
+      "SEPT",
+      "OCT",
+      "NOV",
+      "DEC",
+      "JAN",
+      "FEB",
+      "MAR",
+      "APR",
+      "MAY",
+      "JUN",
+      "JUL",
+      "AUG",
     ];
     const month = monthNames[date.getMonth()];
-    const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    const dayOfWeek = dayNames[date.getDay()];
-
-    return { day, month, dayOfWeek };
+    return { day, month };
   };
 
   const formatTime = (startIsoString: string, endIsoString: string) => {
@@ -105,206 +63,189 @@ export function EventsList() {
     const formatSingleTime = (date: Date) => {
       const hours = date.getHours().toString().padStart(2, "0");
       const minutes = date.getMinutes().toString().padStart(2, "0");
-      return `${hours}:${minutes}`;
+      return `${hours}H${minutes}`;
     };
 
-    return `${formatSingleTime(startDate)} - ${formatSingleTime(endDate)}`;
+    return `${formatSingleTime(startDate)} À ${formatSingleTime(endDate)}`;
   };
 
   if (loading) {
     return (
-      <Card className="w-full max-h-[88vh]">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg font-medium text-gray-900">
-              Événements à venir
-            </CardTitle>
-            {/* <Badge variant="secondary" className="bg-gray-100 text-gray-600">
-              28
-            </Badge> */}
-          </div>
-          <div className="text-sm text-gray-500">Tokens available</div>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#A4D65E]"></div>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#C4EF55]"></div>
+      </div>
     );
   }
 
+  // Split events for different sections
+  const featuredEvent = events[0];
+  const upcomingEvents = events.slice(1, 5);
+  const finishedEvents = events.slice(5, 10);
+
   return (
-    <Card
-      className="w-full border-none h-[calc(100vh-85px)]"
-      style={{ borderRadius: 0 }}
-    >
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-lg font-medium text-gray-900">
-              Événements à venir
-            </CardTitle>
-            <div className="text-sm text-gray-500 mt-1">
-              Tokens available :{" "}
-              <span className="font-bold">
-                {searchQuery ? filteredEvents.length : pagination.total}
-              </span>
+    <div className="space-y-12">
+      {/* Featured Event - Large Card */}
+      {featuredEvent && (
+        <div>
+          <h2 className="text-white text-xl font-bold mb-6 uppercase tracking-wide">
+            NOS EVENTS DU MOMENT
+          </h2>
+          <div className="relative rounded-2xl overflow-hidden aspect-[16/9] bg-gray-800">
+            {featuredEvent.coverImage && (
+              <img
+                src={featuredEvent.coverImage}
+                alt={featuredEvent.title}
+                className="w-full h-full object-cover"
+              />
+            )}
+            <div className="absolute inset-0 bg-black/40" />
+            <div className="absolute bottom-6 left-6 right-6">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <h3 className="text-white text-2xl font-bold mb-3 uppercase">
+                    {featuredEvent.title}
+                  </h3>
+                  <div className="text-[#C4EF55] text-sm font-medium mb-1 uppercase">
+                    LE {formatEventDate(featuredEvent.start).day}{" "}
+                    {formatEventDate(featuredEvent.start).month} À{" "}
+                    {
+                      formatTime(featuredEvent.start, featuredEvent.end).split(
+                        " À "
+                      )[0]
+                    }
+                  </div>
+                  <div className="text-white text-sm mb-4">
+                    @ {featuredEvent.location}
+                  </div>
+                  <p className="text-gray-300 text-sm leading-relaxed mb-6 max-w-lg">
+                    Lorem ipsum sit amet. Qui exercitationem corporis est
+                    eveniet beatae ut beatae at nulla dignissimos voluptatibus
+                    iste qui molestiae olit, error incididunt ut labore dolore
+                    magna aliqua.
+                  </p>
+                </div>
+                <button
+                  onClick={() => window.open(featuredEvent.url, "_blank")}
+                  className="bg-[#C4EF55] text-black px-6 py-2 rounded-md font-bold text-sm hover:bg-[#B5E547] transition-colors uppercase"
+                >
+                  EXPLORER →
+                </button>
+              </div>
             </div>
           </div>
-          <div className="relative w-48 ">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 border-gray-200 h-10 rounded-full"
-            />
-          </div>
         </div>
-      </CardHeader>
-      <CardContent className="pt-0 flex flex-col h-[calc(100vh-85px-125px)]">
-        {/* Events List - Scrollable Container with fixed height */}
-        <div
-          className="overflow-y-auto scrollbar-hide space-y-3 pr-2"
-          style={{ height: "calc(100vh - 85px - 125px - 80px)" }}
-        >
-          <style jsx global>{`
-            .scrollbar-hide {
-              -ms-overflow-style: none;
-              scrollbar-width: none;
-            }
-            .scrollbar-hide::-webkit-scrollbar {
-              display: none;
-            }
-          `}</style>
-          {displayEvents.map((event) => {
-            const { day, month, dayOfWeek } = formatEventDate(event.start);
-            const timeRange = formatTime(event.start, event.end);
+      )}
 
-            return (
-              <div
-                key={event.id}
-                className="flex items-center border border-[#E3E3E3] rounded-xl hover:bg-gray-50 cursor-pointer transition-colors group"
-                style={{ borderRadius: "12px" }}
-                onClick={() => window.open(event.url, "_blank")}
-              >
-                {/* Date Box */}
-                <div className="flex flex-col bg-[#F5F5F5] items-center justify-center mr-4 flex-shrink-0 rounded-l-lg py-3 px-4">
-                  <div className="text-xs text-gray-500 uppercase font-medium leading-none">
-                    {dayOfWeek}
-                  </div>
-                  <div className="text-2xl font-bold text-gray-900 leading-none my-1">
-                    {day}
-                  </div>
-                  <div className="text-xs text-gray-500 uppercase leading-none">
-                    {month}
-                  </div>
-                </div>
+      {/* Upcoming Events Grid */}
+      {upcomingEvents.length > 0 && (
+        <div>
+          <h2 className="text-white text-xl font-bold mb-6 uppercase tracking-wide">
+            NOS EVENTS À VENIR
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {upcomingEvents.map((event) => {
+              const { day, month } = formatEventDate(event.start);
+              const timeRange = formatTime(event.start, event.end);
 
-                {/* Event Details */}
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-medium text-gray-900 text-sm mb-1">
-                    {event.title}
-                  </h3>
-                  {/* {event.description && (
-                    <p className="text-xs text-gray-600 mb-1 line-clamp-2">
-                      {event.description}
-                    </p>
-                  )} */}
-                  <div className="flex items-center text-xs text-gray-500 mb-1">
-                    <MapPin className="h-3 w-3 mr-1 flex-shrink-0" />
-                    <span className="truncate">{event.location}</span>
-                  </div>
-                  <div className="flex items-center text-xs text-gray-500">
-                    <Clock className="h-3 w-3 mr-1 flex-shrink-0" />
-                    <span>{timeRange}</span>
-                  </div>
-                </div>
-
-                {/* Cover Image (if available) */}
-                {event.coverImage && (
-                  <div className="w-16 h-16 mr-3 flex-shrink-0">
+              return (
+                <div
+                  key={event.id}
+                  className="relative rounded-xl overflow-hidden aspect-[4/5] bg-gray-800 group cursor-pointer"
+                  onClick={() => window.open(event.url, "_blank")}
+                >
+                  {event.coverImage && (
                     <img
                       src={event.coverImage}
                       alt={event.title}
-                      className="w-full h-full object-cover rounded-lg"
-                      onError={(e) => {
-                        e.currentTarget.style.display = "none";
-                      }}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <h3 className="text-white text-lg font-bold mb-2 uppercase">
+                      {event.title}
+                    </h3>
+                    <div className="text-[#C4EF55] text-xs font-medium mb-1 uppercase">
+                      LE {day} {month} À {timeRange.split(" À ")[0]}
+                    </div>
+                    <div className="text-white text-xs mb-3">
+                      @ {event.location}
+                    </div>
+                    <button className="bg-[#C4EF55] text-black px-4 py-1.5 rounded text-xs font-bold hover:bg-[#B5E547] transition-colors uppercase">
+                      EXPLORER →
+                    </button>
                   </div>
-                )}
-
-                {/* Arrow */}
-                <div className="group-hover:text-gray-600 transition-colors mr-3">
-                  <ChevronRight className="w-5 h-5" />
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
+      )}
 
-        {/* Pagination - Fixed position at bottom */}
-        {!searchQuery && pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between pt-4 pb-2 mt-4">
-            <div className="text-sm text-gray-500 flex items-center gap-2">
-              Pages {pagination.page} of {pagination.totalPages}
-              {/* ({pagination.total} events) */}
-              {fallback && (
-                <span className="text-yellow-600 text-xs">
-                  (Using fallback data)
-                </span>
-              )}
-            </div>
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                disabled={!pagination.hasPrev}
-                className="p-2 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <ChevronRight className="h-4 w-4 rotate-180" />
-              </button>
+      {/* Finished Events Grid */}
+      {finishedEvents.length > 0 && (
+        <div>
+          <h2 className="text-white text-xl font-bold mb-6 uppercase tracking-wide">
+            NOS EVENTS TERMINÉS
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            {finishedEvents.map((event) => {
+              const { day, month } = formatEventDate(event.start);
+              const timeRange = formatTime(event.start, event.end);
 
-              {Array.from(
-                { length: pagination.totalPages },
-                (_, i) => i + 1
-              ).map((page) => (
-                <button
-                  key={page}
-                  onClick={() => handlePageChange(page)}
-                  className={`min-w-[32px] h-8 px-3 text-sm rounded-md border transition-colors ${
-                    currentPage === page
-                      ? "bg-[#F1F1F1] text-gray-900 border-gray-300"
-                      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-                  }`}
+              return (
+                <div
+                  key={event.id}
+                  className="relative rounded-lg overflow-hidden aspect-[4/5] bg-gray-800 group cursor-pointer"
+                  onClick={() => window.open(event.url, "_blank")}
                 >
-                  {page}
-                </button>
-              ))}
-
-              <button
-                onClick={() =>
-                  handlePageChange(
-                    Math.min(pagination.totalPages, currentPage + 1)
-                  )
-                }
-                disabled={!pagination.hasNext}
-                className="p-2 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </button>
-            </div>
+                  {event.coverImage && (
+                    <img
+                      src={event.coverImage}
+                      alt={event.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  <div className="absolute bottom-3 left-3 right-3">
+                    <h3 className="text-white text-sm font-bold mb-1 uppercase line-clamp-2">
+                      {event.title}
+                    </h3>
+                    <div className="text-[#C4EF55] text-xs font-medium mb-1 uppercase">
+                      LE {day} {month} À {timeRange.split(" À ")[0]}
+                    </div>
+                    <button className="bg-[#C4EF55] text-black px-3 py-1 rounded text-xs font-bold hover:bg-[#B5E547] transition-colors uppercase">
+                      EXPLORER →
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Search results info - Fixed position at bottom */}
-        {searchQuery && (
-          <div className="pt-4 pb-2 text-sm text-gray-500 border-t border-gray-200 mt-4">
-            Found {filteredEvents.length} events matching "{searchQuery}"
-          </div>
-        )}
-      </CardContent>
-    </Card>
+      {/* Scroll to top button */}
+      <div className="flex justify-center pt-8">
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="w-12 h-12 bg-[#C4EF55] rounded-full flex items-center justify-center hover:bg-[#B5E547] transition-colors"
+        >
+          <svg
+            className="w-5 h-5 text-black"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 10l7-7m0 0l7 7m-7-7v18"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
   );
 }

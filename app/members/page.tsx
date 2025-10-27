@@ -2,13 +2,12 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { verifyAuthCookie } from "@/lib/magic-link";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
-import { MembersTable } from "@/components/dashboard/members-table";
-import { EventsList } from "@/components/dashboard/events-list";
+import { MembersGrid } from "@/components/dashboard/members-grid";
 
 // Force Node.js runtime for auth
 export const runtime = "nodejs";
 
-export default async function DashboardPage() {
+export default async function MembersPage() {
   const cookieStore = await cookies();
   const authCookie = cookieStore.get("nc_auth")?.value;
 
@@ -34,24 +33,24 @@ export default async function DashboardPage() {
       {/* Hero Section */}
       <div className="relative py-16 px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="max-w-2xl">
+          <div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-              DÉCOUVREZ NOS <span className="text-[#C4EF55]">ÉVÉNEMENTS</span>{" "}
-              PADEL
+              NOS <span className="text-[#C4EF55]">MEMBRES</span>
             </h1>
             <p className="text-gray-300 text-lg leading-relaxed">
-              Lorem ipsum dolor sit amet. Qui exercitationem corporis est
-              eveniet beatae ut beatae at nulla dignissimos voluptatibus iste 28
-              molestiae olit error incididunt ut labore dolore magna aliqua.
+              Lorem ipsum dolor sit amet. Qui exercitationem corporis aut
+              eveniet beatae ut distinctio autem. At <br /> nulla repellat cum
+              nemo provident non obcaecati voluptas. Aut dicta quis et omnis
+              consequatur <br /> vel amet fuga et laborum illum.
             </p>
           </div>
         </div>
       </div>
 
-      {/* Events Content */}
+      {/* Members Content */}
       <main className="px-6 pb-12">
         <div className="max-w-7xl mx-auto">
-          <EventsList />
+          <MembersGrid />
         </div>
       </main>
     </div>
