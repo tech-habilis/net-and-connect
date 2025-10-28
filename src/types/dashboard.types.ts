@@ -19,6 +19,12 @@ export interface Expert {
   title: string;
 }
 
+export interface Partner {
+  id: string;
+  title: string;
+  image: string;
+}
+
 export interface Event {
   id: string;
   title: string;
