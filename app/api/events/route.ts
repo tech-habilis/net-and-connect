@@ -10,6 +10,7 @@ interface LumaEventData {
   id: string;
   name: string;
   description?: string;
+  description_md?: string;
   start_at: string;
   end_at: string;
   cover_url?: string;
@@ -39,6 +40,7 @@ interface NormalizedEvent {
   id: string;
   title: string;
   description?: string;
+  descriptionMd?: string;
   start: string; // ISO format
   end: string; // ISO format
   location: string;
@@ -48,7 +50,9 @@ interface NormalizedEvent {
 }
 
 interface PaginatedResponse {
-  events: NormalizedEvent[];
+  featured?: NormalizedEvent;
+  upcoming: NormalizedEvent[];
+  finished: NormalizedEvent[];
   pagination: {
     page: number;
     limit: number;
@@ -60,7 +64,9 @@ interface PaginatedResponse {
   fallback?: boolean;
 }
 
-async function fetchEventsFromLuma(): Promise<NormalizedEvent[]> {
+async function fetchEventsFromLuma(
+  type: "upcoming" | "finished"
+): Promise<NormalizedEvent[]> {
   if (!LUMA_EVENTS_URL) {
     throw new Error("LUMA_EVENTS_URL not configured");
   }
@@ -74,10 +80,22 @@ async function fetchEventsFromLuma(): Promise<NormalizedEvent[]> {
     headers["Authorization"] = `Bearer ${LUMA_API_KEY}`;
   }
 
-  // Add sorting parameters to the URL
+  // Add sorting and date filtering parameters to the URL
   const url = new URL(LUMA_EVENTS_URL);
   url.searchParams.append("sort_column", "start_at");
-  url.searchParams.append("sort_direction", "asc");
+
+  const now = new Date();
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  if (type === "upcoming") {
+    url.searchParams.append("sort_direction", "asc");
+    url.searchParams.append("after", yesterday.toISOString());
+  } else {
+    url.searchParams.append("sort_direction", "desc");
+    url.searchParams.append("before", now.toISOString());
+  }
+
   const response = await fetch(url.toString(), {
     method: "GET",
     headers,
@@ -116,6 +134,7 @@ async function fetchEventsFromLuma(): Promise<NormalizedEvent[]> {
       id: event.id,
       title: event.name,
       description: event.description,
+      descriptionMd: event.description_md,
       start: event.start_at,
       end: event.end_at,
       location,
@@ -125,13 +144,7 @@ async function fetchEventsFromLuma(): Promise<NormalizedEvent[]> {
     };
   });
 
-  // Filter out past events and sort by start date ascending
-  const now = new Date();
-  const upcomingEvents = normalizedEvents
-    .filter((event) => new Date(event.start) >= now)
-    .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
-
-  return upcomingEvents;
+  return normalizedEvents;
 }
 
 function paginateEvents(
@@ -160,6 +173,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const req = searchParams.get("req");
+    const type = searchParams.get("type"); // 'upcoming' or 'finished'
 
     if (req !== "events") {
       return NextResponse.json({ error: "Invalid request" }, { status: 400 });
@@ -173,13 +187,57 @@ export async function GET(request: NextRequest) {
     );
 
     try {
-      // Fetch all events from LUMA
-      const events = await fetchEventsFromLuma();
-      const paginatedResult = paginateEvents(events, page, limit);
+      if (type === 'upcoming') {
+        // Fetch only upcoming events
+        const upcomingEvents = await fetchEventsFromLuma('upcoming');
+        const featured = page === 1 ? upcomingEvents[0] || null : null;
+        const upcoming = page === 1 ? upcomingEvents.slice(1) : upcomingEvents;
+        const paginatedResult = paginateEvents(upcoming, page === 1 ? 1 : page, limit);
 
-      return NextResponse.json({
-        ...paginatedResult,
-      });
+        return NextResponse.json({
+          featured,
+          upcoming: paginatedResult.events,
+          pagination: paginatedResult.pagination,
+        });
+      } else if (type === 'finished') {
+        // Fetch only finished events
+        const finishedEvents = await fetchEventsFromLuma('finished');
+        const paginatedResult = paginateEvents(finishedEvents, page, limit);
+
+        return NextResponse.json({
+          finished: paginatedResult.events,
+          pagination: paginatedResult.pagination,
+        });
+      } else {
+        // Default behavior - fetch both for initial load
+        // Fetch both upcoming and finished events from LUMA
+        const [upcomingEvents, finishedEvents] = await Promise.all([
+          fetchEventsFromLuma("upcoming"),
+          fetchEventsFromLuma("finished"),
+        ]);
+
+        // Featured event is the first upcoming event
+        const featured = upcomingEvents[0] || null;
+
+        // Remove featured event from upcoming list
+        const upcoming = upcomingEvents.slice(1);
+
+        const totalEvents = upcoming.length + finishedEvents.length;
+
+        return NextResponse.json({
+          featured,
+          upcoming: upcoming,
+          finished: finishedEvents,
+          pagination: {
+            page,
+            limit,
+            total: totalEvents,
+            totalPages: Math.ceil(totalEvents / limit),
+            hasNext: upcoming.length > 4 || finishedEvents.length > 4,
+            hasPrev: false,
+          },
+        });
+      }
     } catch (lumaError) {
       console.error("LUMA fetch error:", lumaError);
 
@@ -189,24 +247,57 @@ export async function GET(request: NextRequest) {
           id: "e1",
           title: "Afterwork business",
           description: "Soirée networking pour entrepreneurs et dirigeants",
-          start: "2025-10-09T18:00:00.000Z",
-          end: "2025-10-09T21:00:00.000Z",
+          start: "2025-10-29T18:00:00.000Z",
+          end: "2025-10-29T21:00:00.000Z",
           location: "Boulogne, Paris",
-          url: "https://lu.ma/afterwork-business-09",
+          url: "https://lu.ma/afterwork-business-29",
           timezone: "Europe/Paris",
         },
         {
           id: "e2",
           title: "Afterwork business",
           description: "Soirée networking pour entrepreneurs et dirigeants",
-          start: "2025-10-16T18:00:00.000Z",
-          end: "2025-10-16T21:00:00.000Z",
+          start: "2025-11-05T18:00:00.000Z",
+          end: "2025-11-05T21:00:00.000Z",
           location: "Boulogne, Paris",
-          url: "https://lu.ma/afterwork-business-16",
+          url: "https://lu.ma/afterwork-business-05",
           timezone: "Europe/Paris",
         },
         {
           id: "e3",
+          title: "Afterwork business",
+          description: "Soirée networking pour entrepreneurs et dirigeants",
+          start: "2025-11-12T18:00:00.000Z",
+          end: "2025-11-12T21:00:00.000Z",
+          location: "Boulogne, Paris",
+          url: "https://lu.ma/afterwork-business-12",
+          timezone: "Europe/Paris",
+        },
+        {
+          id: "e4",
+          title: "Afterwork business",
+          description: "Soirée networking pour entrepreneurs et dirigeants",
+          start: "2025-11-19T18:00:00.000Z",
+          end: "2025-11-19T21:00:00.000Z",
+          location: "Boulogne, Paris",
+          url: "https://lu.ma/afterwork-business-19",
+          timezone: "Europe/Paris",
+        },
+        {
+          id: "e5",
+          title: "Afterwork business",
+          description: "Soirée networking pour entrepreneurs et dirigeants",
+          start: "2025-11-26T18:00:00.000Z",
+          end: "2025-11-26T21:00:00.000Z",
+          location: "Boulogne, Paris",
+          url: "https://lu.ma/afterwork-business-26",
+          timezone: "Europe/Paris",
+        },
+      ];
+
+      const mockFinishedEvents: NormalizedEvent[] = [
+        {
+          id: "f1",
           title: "Afterwork business",
           description: "Soirée networking pour entrepreneurs et dirigeants",
           start: "2025-10-21T18:00:00.000Z",
@@ -216,59 +307,52 @@ export async function GET(request: NextRequest) {
           timezone: "Europe/Paris",
         },
         {
-          id: "e4",
+          id: "f2",
           title: "Afterwork business",
           description: "Soirée networking pour entrepreneurs et dirigeants",
-          start: "2025-10-23T18:00:00.000Z",
-          end: "2025-10-23T21:00:00.000Z",
+          start: "2025-10-14T18:00:00.000Z",
+          end: "2025-10-14T21:00:00.000Z",
           location: "Boulogne, Paris",
-          url: "https://lu.ma/afterwork-business-23",
+          url: "https://lu.ma/afterwork-business-14",
           timezone: "Europe/Paris",
         },
         {
-          id: "e5",
+          id: "f3",
           title: "Afterwork business",
           description: "Soirée networking pour entrepreneurs et dirigeants",
-          start: "2025-10-26T18:00:00.000Z",
-          end: "2025-10-26T21:00:00.000Z",
+          start: "2025-10-07T18:00:00.000Z",
+          end: "2025-10-07T21:00:00.000Z",
           location: "Boulogne, Paris",
-          url: "https://lu.ma/afterwork-business-26",
+          url: "https://lu.ma/afterwork-business-07",
           timezone: "Europe/Paris",
         },
         {
-          id: "e6",
+          id: "f4",
           title: "Afterwork business",
           description: "Soirée networking pour entrepreneurs et dirigeants",
-          start: "2025-10-30T18:00:00.000Z",
-          end: "2025-10-30T21:00:00.000Z",
+          start: "2025-09-30T18:00:00.000Z",
+          end: "2025-09-30T21:00:00.000Z",
           location: "Boulogne, Paris",
           url: "https://lu.ma/afterwork-business-30",
           timezone: "Europe/Paris",
         },
-        {
-          id: "e7",
-          title: "Afterwork business",
-          description: "Soirée networking pour entrepreneurs et dirigeants",
-          start: "2025-10-31T18:00:00.000Z",
-          end: "2025-10-31T21:00:00.000Z",
-          location: "Boulogne, Paris",
-          url: "https://lu.ma/afterwork-business-31",
-          timezone: "Europe/Paris",
-        },
       ];
 
-      // Filter out past events and sort
-      const now = new Date();
-      const upcomingEvents = mockEvents
-        .filter((event) => new Date(event.start) >= now)
-        .sort(
-          (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
-        );
-
-      const paginatedResult = paginateEvents(upcomingEvents, page, limit);
+      const featured = mockEvents[0] || null;
+      const upcoming = mockEvents.slice(1);
 
       return NextResponse.json({
-        ...paginatedResult,
+        featured,
+        upcoming: upcoming.slice(0, 4),
+        finished: mockFinishedEvents.slice(0, 4),
+        pagination: {
+          page,
+          limit,
+          total: upcoming.length + mockFinishedEvents.length,
+          totalPages: 1,
+          hasNext: false,
+          hasPrev: false,
+        },
         fallback: true, // Indicates this is fallback data
       });
     }

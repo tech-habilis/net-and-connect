@@ -1,112 +1,9 @@
-// "use client";
-
-// import { Button } from "@/components/ui/button";
-// import { ChevronDown, LogOut, User } from "lucide-react";
-// import Image from "next/image";
-// import { useRouter, usePathname } from "next/navigation";
-
-// interface DashboardHeaderProps {
-//   user?: {
-//     name?: string | null;
-//     email?: string | null;
-//   };
-// }
-
-// export function DashboardHeader({ user }: DashboardHeaderProps) {
-//   const router = useRouter();
-//   const pathname = usePathname();
-
-//   const handleSignOut = async () => {
-//     window.location.href = "/api/auth?req=logout";
-//   };
-
-//   const navigationItems = [
-//     { label: "HOME", path: "/dashboard", active: pathname === "/dashboard" },
-//     {
-//       label: "NOS ÉVENTS",
-//       path: "/dashboard",
-//       active: pathname === "/dashboard",
-//     },
-//     { label: "NOS MEMBRES", path: "/members", active: pathname === "/members" },
-//     { label: "NOS EXPERTS", path: "/experts", active: pathname === "/experts" },
-//     {
-//       label: "NOS PARTENAIRES",
-//       path: "/partners",
-//       active: pathname === "/partners",
-//     },
-//     {
-//       label: "NOTRE COMMUNAUTÉ",
-//       path: "/community",
-//       active: pathname === "/community",
-//     },
-//   ];
-
-//   return (
-//     <header className="bg-black text-white">
-//       <div className="max-w-7xl mx-auto">
-//         {/* Top bar with logo and user info */}
-//         <div className="flex items-center justify-between px-6 py-3 border-b border-gray-800">
-//           {/* Logo */}
-//           <div className="flex items-center space-x-2">
-//             <div className="w-6 h-6 bg-[#C4EF55] rounded-sm flex items-center justify-center">
-//               <span className="text-black font-bold text-xs">N</span>
-//             </div>
-//             <span className="text-white font-bold text-lg">NET&CONNECT</span>
-//           </div>
-
-//           {/* User Profile Section */}
-//           <div className="flex items-center space-x-4">
-//             {/* Points/Credits */}
-//             <div className="flex items-center bg-[#C4EF55] text-black px-3 py-1 rounded-full">
-//               <span className="text-sm font-bold">19 JETONS</span>
-//             </div>
-
-//             {/* User Avatar and Dropdown */}
-//             <div className="flex items-center space-x-2">
-//               <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-//                 <span className="text-white text-sm font-bold">A</span>
-//               </div>
-//               <ChevronDown className="w-4 h-4 text-white" />
-//             </div>
-
-//             {/* Connection Status */}
-//             <div className="bg-[#C4EF55] text-black px-3 py-1 rounded text-xs font-bold">
-//               CONNEXION
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* Navigation Tabs */}
-//         <nav className="px-6">
-//           <div className="flex items-center space-x-0">
-//             {navigationItems.map((item, index) => (
-//               <button
-//                 key={index}
-//                 onClick={() => router.push(item.path)}
-//                 className={`px-6 py-3 text-sm font-medium transition-colors relative ${
-//                   item.active
-//                     ? "bg-gray-800 text-white"
-//                     : "text-gray-400 hover:text-white hover:bg-gray-900"
-//                 }`}
-//               >
-//                 {item.label}
-//                 {item.active && (
-//                   <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#C4EF55]"></div>
-//                 )}
-//               </button>
-//             ))}
-//           </div>
-//         </nav>
-//       </div>
-//     </header>
-//   );
-// }
 "use client";
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronDown, Coins, LogOut } from "lucide-react";
+import { ChevronDown, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useState, useRef, useEffect } from "react";
@@ -178,13 +75,13 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
         </div>
 
         {/* Nav links */}
-        <div className="flex items-center rounded-xl px-2 py-1">
+        <div className="flex items-center rounded-xl p-1 bg-[#292828]">
           {navigationItems.map((item) => (
             <Link
               key={item.label}
               href={item.path}
               className={cn(
-                "px-4 py-2 text-xs font-semibold uppercase transition-all duration-200",
+                "px-4 py-2 text-lg font-semibold uppercase transition-all duration-200",
                 item.active
                   ? "text-white rounded-[10px]"
                   : "text-white/40 hover:text-white"
@@ -207,13 +104,15 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
       {/* Right section */}
       <div className="flex items-center gap-3">
         {/* JTEONS Button */}
-        <Button
-          variant="ghost"
-          className="bg-lime-200 text-black text-xs font-semibold flex items-center gap-2 rounded-xl hover:bg-lime-300"
-        >
-          <Coins className="w-4 h-4" />
-          10 JTEONS
-        </Button>
+        <div className="bg-[#EFF9D226] rounded-xl p-1">
+          <Button
+            variant="ghost"
+            className="bg-lime-200 text-black text-lg font-semibold flex items-center gap-2 rounded-xl hover:bg-lime-300"
+          >
+            <Coins className="w-4 h-4" />
+            10 JTEONS
+          </Button>
+        </div>
 
         {/* Avatar & Dropdown */}
         <div className="relative" ref={dropdownRef}>
@@ -221,9 +120,9 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
             className="flex items-center gap-1 cursor-pointer"
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           >
-            <div className="bg-lime-100 rounded-xl p-1">
+            <div className="bg-[#EFF9D226] rounded-xl p-1">
               <Image
-                src="https://randomuser.me/api/portraits/men/75.jpg"
+                src="/assets/avatar-placeholder.png"
                 alt="User Avatar"
                 width={32}
                 height={32}

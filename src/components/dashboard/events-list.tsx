@@ -1,16 +1,24 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { MapPin, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Event } from "@/types/dashboard.types";
+import { EventCard } from "./event-card";
 
 export function EventsList() {
-  const [events, setEvents] = useState<Event[]>([]);
+  const [featuredEvent, setFeaturedEvent] = useState<Event | null>(null);
+  const [allUpcomingEvents, setAllUpcomingEvents] = useState<Event[]>([]);
+  const [allFinishedEvents, setAllFinishedEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [upcomingPage, setUpcomingPage] = useState(1);
+  const [finishedPage, setFinishedPage] = useState(1);
+
+  const eventsPerPage = 4;
 
   const loadEvents = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/events?req=events&page=1&limit=20`, {
+      const response = await fetch(`/api/events?req=events&page=1&limit=50`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -23,13 +31,32 @@ export function EventsList() {
       }
 
       const data = await response.json();
-      setEvents(data.events || []);
+      setFeaturedEvent(data.featured || null);
+      setAllUpcomingEvents(data.upcoming || []);
+      setAllFinishedEvents(data.finished || []);
     } catch (error) {
       console.error("Failed to load events:", error);
     } finally {
       setLoading(false);
     }
   };
+
+  // Get current page events
+  const getCurrentPageEvents = (events: Event[], page: number) => {
+    const startIndex = (page - 1) * eventsPerPage;
+    const endIndex = startIndex + eventsPerPage;
+    return events.slice(startIndex, endIndex);
+  };
+
+  // Calculate total pages
+  const getTotalPages = (totalEvents: number) => {
+    return Math.ceil(totalEvents / eventsPerPage);
+  };
+
+  const upcomingEvents = getCurrentPageEvents(allUpcomingEvents, upcomingPage);
+  const finishedEvents = getCurrentPageEvents(allFinishedEvents, finishedPage);
+  const upcomingTotalPages = getTotalPages(allUpcomingEvents.length);
+  const finishedTotalPages = getTotalPages(allFinishedEvents.length);
 
   useEffect(() => {
     loadEvents();
@@ -77,18 +104,13 @@ export function EventsList() {
     );
   }
 
-  // Split events for different sections
-  const featuredEvent = events[0];
-  const upcomingEvents = events.slice(1, 5);
-  const finishedEvents = events.slice(5, 10);
-
   return (
     <div className="space-y-12">
       {/* Featured Event - Large Card */}
       {featuredEvent && (
         <div>
           <h2 className="text-white text-xl font-bold mb-6 uppercase tracking-wide">
-            NOS EVENTS DU MOMENT
+            <span className="text-white/60">NOS EVENTS</span> DU MOMENT
           </h2>
           <div className="relative rounded-2xl overflow-hidden aspect-[16/9] bg-gray-800">
             {featuredEvent.coverImage && (
@@ -100,12 +122,12 @@ export function EventsList() {
             )}
             <div className="absolute inset-0 bg-black/40" />
             <div className="absolute bottom-6 left-6 right-6">
-              <div className="flex items-start justify-between">
+              <div className="flex items-end justify-between">
                 <div className="flex-1">
                   <h3 className="text-white text-2xl font-bold mb-3 uppercase">
                     {featuredEvent.title}
                   </h3>
-                  <div className="text-[#C4EF55] text-sm font-medium mb-1 uppercase">
+                  <div className="text-lime-200 text-sm font-medium mb-1 uppercase">
                     LE {formatEventDate(featuredEvent.start).day}{" "}
                     {formatEventDate(featuredEvent.start).month} À{" "}
                     {
@@ -114,21 +136,26 @@ export function EventsList() {
                       )[0]
                     }
                   </div>
-                  <div className="text-white text-sm mb-4">
-                    @ {featuredEvent.location}
+                  <div className="text-lime-200 text-sm mb-4 flex items-center gap-1">
+                    <MapPin className="w-4 h-4" />
+                    {featuredEvent.location}
                   </div>
-                  <p className="text-gray-300 text-sm leading-relaxed mb-6 max-w-lg">
-                    Lorem ipsum sit amet. Qui exercitationem corporis est
-                    eveniet beatae ut beatae at nulla dignissimos voluptatibus
-                    iste qui molestiae olit, error incididunt ut labore dolore
-                    magna aliqua.
-                  </p>
+                  <div
+                    className="text-gray-300 text-md leading-relaxed max-w-lg"
+                    dangerouslySetInnerHTML={{
+                      __html: (featuredEvent.description || "").replace(
+                        /\n/g,
+                        "<br>"
+                      ),
+                    }}
+                  />
                 </div>
                 <button
                   onClick={() => window.open(featuredEvent.url, "_blank")}
-                  className="bg-[#C4EF55] text-black px-6 py-2 rounded-md font-bold text-sm hover:bg-[#B5E547] transition-colors uppercase"
+                  className="bg-lime-200 text-black px-6 py-2 rounded-md font-bold text-sm hover:bg-[#B5E547] transition-colors uppercase cursor-pointer flex items-center gap-2"
                 >
-                  EXPLORER →
+                  S’INSCRIRE
+                  <ArrowUpRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -137,91 +164,80 @@ export function EventsList() {
       )}
 
       {/* Upcoming Events Grid */}
-      {upcomingEvents.length > 0 && (
+      {allUpcomingEvents.length > 0 && (
         <div>
           <h2 className="text-white text-xl font-bold mb-6 uppercase tracking-wide">
-            NOS EVENTS À VENIR
+            <span className="text-white/60">NOS EVENTS</span> À VENIR
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {upcomingEvents.map((event) => {
-              const { day, month } = formatEventDate(event.start);
-              const timeRange = formatTime(event.start, event.end);
-
-              return (
-                <div
-                  key={event.id}
-                  className="relative rounded-xl overflow-hidden aspect-[4/5] bg-gray-800 group cursor-pointer"
-                  onClick={() => window.open(event.url, "_blank")}
-                >
-                  {event.coverImage && (
-                    <img
-                      src={event.coverImage}
-                      alt={event.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <h3 className="text-white text-lg font-bold mb-2 uppercase">
-                      {event.title}
-                    </h3>
-                    <div className="text-[#C4EF55] text-xs font-medium mb-1 uppercase">
-                      LE {day} {month} À {timeRange.split(" À ")[0]}
-                    </div>
-                    <div className="text-white text-xs mb-3">
-                      @ {event.location}
-                    </div>
-                    <button className="bg-[#C4EF55] text-black px-4 py-1.5 rounded text-xs font-bold hover:bg-[#B5E547] transition-colors uppercase">
-                      EXPLORER →
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+            {upcomingEvents.map((event: Event) => (
+              <EventCard key={event.id} event={event} />
+            ))}
           </div>
+
+          {/* Upcoming Events Pagination */}
+          {upcomingTotalPages > 1 && (
+            <div className="flex items-center justify-end gap-2 mt-6">
+              <button
+                onClick={() => setUpcomingPage((prev) => Math.max(1, prev - 1))}
+                disabled={upcomingPage === 1}
+                className="w-12 h-12 bg-gray-700 rounded-xl flex items-center justify-center hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft className="w-5 h-5 text-white" />
+              </button>
+
+              <button
+                onClick={() =>
+                  setUpcomingPage((prev) =>
+                    Math.min(upcomingTotalPages, prev + 1)
+                  )
+                }
+                disabled={upcomingPage === upcomingTotalPages}
+                className="w-12 h-12 bg-[#C4EF55] rounded-xl flex items-center justify-center hover:bg-[#B5E547] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronRight className="w-5 h-5 text-black" />
+              </button>
+            </div>
+          )}
         </div>
       )}
 
       {/* Finished Events Grid */}
-      {finishedEvents.length > 0 && (
+      {allFinishedEvents.length > 0 && (
         <div>
           <h2 className="text-white text-xl font-bold mb-6 uppercase tracking-wide">
-            NOS EVENTS TERMINÉS
+            <span className="text-white/60">NOS EVENTS</span> TERMINÉS
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            {finishedEvents.map((event) => {
-              const { day, month } = formatEventDate(event.start);
-              const timeRange = formatTime(event.start, event.end);
-
-              return (
-                <div
-                  key={event.id}
-                  className="relative rounded-lg overflow-hidden aspect-[4/5] bg-gray-800 group cursor-pointer"
-                  onClick={() => window.open(event.url, "_blank")}
-                >
-                  {event.coverImage && (
-                    <img
-                      src={event.coverImage}
-                      alt={event.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  <div className="absolute bottom-3 left-3 right-3">
-                    <h3 className="text-white text-sm font-bold mb-1 uppercase line-clamp-2">
-                      {event.title}
-                    </h3>
-                    <div className="text-[#C4EF55] text-xs font-medium mb-1 uppercase">
-                      LE {day} {month} À {timeRange.split(" À ")[0]}
-                    </div>
-                    <button className="bg-[#C4EF55] text-black px-3 py-1 rounded text-xs font-bold hover:bg-[#B5E547] transition-colors uppercase">
-                      EXPLORER →
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {finishedEvents.map((event: Event) => (
+              <EventCard key={event.id} event={event} />
+            ))}
           </div>
+
+          {/* Finished Events Pagination */}
+          {finishedTotalPages > 1 && (
+            <div className="flex items-center justify-end gap-2 mt-6">
+              <button
+                onClick={() => setFinishedPage((prev) => Math.max(1, prev - 1))}
+                disabled={finishedPage === 1}
+                className="w-12 h-12 bg-gray-700 rounded-xl flex items-center justify-center hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft className="w-5 h-5 text-white" />
+              </button>
+
+              <button
+                onClick={() =>
+                  setFinishedPage((prev) =>
+                    Math.min(finishedTotalPages, prev + 1)
+                  )
+                }
+                disabled={finishedPage === finishedTotalPages}
+                className="w-12 h-12 bg-[#C4EF55] rounded-xl flex items-center justify-center hover:bg-[#B5E547] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronRight className="w-5 h-5 text-black" />
+              </button>
+            </div>
+          )}
         </div>
       )}
 
