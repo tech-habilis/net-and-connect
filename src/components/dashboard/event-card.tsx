@@ -57,7 +57,7 @@ export function EventCard({ event }: EventCardProps) {
       )}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
       <div className="absolute bottom-4 left-4 right-4 group-hover:bottom-16 transition-all duration-300">
-        <h3 className="text-white text-lg font-bold mb-2 uppercase">
+        <h3 className="text-white text-lg font-bold mb-2 uppercase line-clamp-1">
           {event.title}
         </h3>
         <div className="text-lime-200 text-xs font-medium mb-1 uppercase">
