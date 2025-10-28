@@ -94,7 +94,7 @@ export function SignInForm() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full cursor-pointer bg-[#DDFF80] hover:bg-[#D4F573] text-black font-bold py-3 md:py-4 px-6 rounded-md transition-all duration-200 flex items-center justify-center text-xs md:text-sm tracking-wide mt-8 md:mt-12 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full cursor-pointer bg-[#DDFF80] hover:bg-[#D4F573] text-black font-bold py-3 md:py-4 px-6 rounded-md transition-all duration-200 flex items-center justify-center text-xs md:text-lg tracking-wide mt-8 md:mt-12 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? "ENVOI EN COURS..." : "ENVOYER MON LIEN DE CONNEXION"}
         </button>
