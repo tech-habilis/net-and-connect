@@ -141,7 +141,7 @@ export function EventsList() {
                     {featuredEvent.location}
                   </div>
                   <div
-                    className="text-gray-300 text-md leading-relaxed max-w-lg"
+                    className="text-gray-300 text-md leading-relaxed max-w-lg line-clamp-5"
                     dangerouslySetInnerHTML={{
                       __html: (featuredEvent.description || "").replace(
                         /\n/g,

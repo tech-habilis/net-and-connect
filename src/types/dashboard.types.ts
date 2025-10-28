@@ -9,6 +9,16 @@ export interface Member {
   linkedin?: string;
 }
 
+export interface Expert {
+  id: string;
+  name: string;
+  phone: string;
+  email: string;
+  description: string;
+  image: string;
+  title: string;
+}
+
 export interface Event {
   id: string;
   title: string;
