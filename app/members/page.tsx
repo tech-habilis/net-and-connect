@@ -35,7 +35,7 @@ export default async function MembersPage() {
         <div className="max-w-7xl mx-auto">
           <div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-              NOS <span className="text-[#C4EF55]">MEMBRES</span>
+              NOS <span className="text-lime-200">MEMBRES</span>
             </h1>
             <p className="text-gray-300 text-lg leading-relaxed">
               Lorem ipsum dolor sit amet. Qui exercitationem corporis aut

@@ -39,7 +39,7 @@ export function MembersGrid() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#C4EF55]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-lime-200"></div>
       </div>
     );
   }
@@ -82,7 +82,7 @@ export function MembersGrid() {
 
             {/* Development Tag */}
             {/* <div className="mb-4">
-              <span className="inline-block bg-[#C4EF55] text-black text-xs font-bold px-3 py-1 rounded uppercase">
+              <span className="inline-block bg-lime-200 text-black text-xs font-bold px-3 py-1 rounded uppercase">
                 DÉVELOPPEMENT WEB
               </span>
             </div> */}
@@ -101,7 +101,7 @@ export function MembersGrid() {
           </div>
 
           {/* Hover Effect Overlay */}
-          <div className="absolute inset-0 bg-[#C4EF55]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute inset-0 bg-lime-200/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </div>
       ))}
     </div>

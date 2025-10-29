@@ -41,7 +41,7 @@ export function PartnersList() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#C4EF55]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-lime-200"></div>
       </div>
     );
   }
@@ -79,7 +79,7 @@ export function PartnersList() {
           </div>
 
           {/* Hover Effect Overlay */}
-          <div className="absolute inset-0 bg-[#C4EF55]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute inset-0 bg-lime-200/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </div>
       ))}
     </div>
