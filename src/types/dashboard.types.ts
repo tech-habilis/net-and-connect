@@ -36,3 +36,12 @@ export interface Event {
   coverImage?: string;
   timezone?: string;
 }
+
+export interface Community {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  title: string;
+  image?: string;
+}

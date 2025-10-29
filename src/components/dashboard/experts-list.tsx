@@ -40,7 +40,7 @@ export function ExpertsList() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#C4EF55]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-lime-200"></div>
       </div>
     );
   }
@@ -136,7 +136,7 @@ export function ExpertsList() {
                   </div>
                   {/* Action Button */}
                   <div className="bg-[#EFF9D226] rounded-xl p-1">
-                    <button className="bg-[#C4EF55] text-black px-4 py-2 rounded-md text-xs font-bold hover:bg-[#B5E547] transition-colors uppercase flex items-center gap-2 tracking-wide">
+                    <button className="bg-lime-200 text-black px-4 py-2 rounded-md text-xs font-bold hover:bg-[#B5E547] transition-colors uppercase flex items-center gap-2 tracking-wide">
                       PRENDRE RENDEZ-VOUS
                       <ArrowUpRight className="w-3 h-3" />
                     </button>
@@ -151,7 +151,7 @@ export function ExpertsList() {
           </div>
 
           {/* Hover Effect Overlay */}
-          <div className="absolute inset-0 bg-[#C4EF55]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute inset-0 bg-lime-200/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </div>
       ))}
     </div>

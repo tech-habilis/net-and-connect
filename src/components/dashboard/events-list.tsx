@@ -99,7 +99,7 @@ export function EventsList() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#C4EF55]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-lime-200"></div>
       </div>
     );
   }
@@ -193,7 +193,7 @@ export function EventsList() {
                   )
                 }
                 disabled={upcomingPage === upcomingTotalPages}
-                className="w-12 h-12 bg-[#C4EF55] rounded-xl flex items-center justify-center hover:bg-[#B5E547] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-12 h-12 bg-lime-200 rounded-xl flex items-center justify-center hover:bg-[#B5E547] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronRight className="w-5 h-5 text-black" />
               </button>
@@ -232,7 +232,7 @@ export function EventsList() {
                   )
                 }
                 disabled={finishedPage === finishedTotalPages}
-                className="w-12 h-12 bg-[#C4EF55] rounded-xl flex items-center justify-center hover:bg-[#B5E547] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-12 h-12 bg-lime-200 rounded-xl flex items-center justify-center hover:bg-[#B5E547] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronRight className="w-5 h-5 text-black" />
               </button>
@@ -245,7 +245,7 @@ export function EventsList() {
       <div className="flex justify-center pt-8">
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="w-12 h-12 bg-[#C4EF55] rounded-full flex items-center justify-center hover:bg-[#B5E547] transition-colors"
+          className="w-12 h-12 bg-lime-200 rounded-full flex items-center justify-center hover:bg-[#B5E547] transition-colors"
         >
           <svg
             className="w-5 h-5 text-black"

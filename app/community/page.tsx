@@ -2,12 +2,12 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { verifyAuthCookie } from "@/lib/magic-link";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
-import { PartnersList } from "@/components/dashboard/partners-list";
+import { CommunityList } from "@/components/dashboard/community-list";
 
 // Force Node.js runtime for auth
 export const runtime = "nodejs";
 
-export default async function PartnersPage() {
+export default async function CommunityPage() {
   const cookieStore = await cookies();
   const authCookie = cookieStore.get("nc_auth")?.value;
 
@@ -35,7 +35,7 @@ export default async function PartnersPage() {
         <div className="max-w-7xl mx-auto">
           <div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-              NOS <span className="text-lime-200">SPONSORS</span>
+              NOTRE <span className="text-lime-200">COMMUNAUTÉ</span>
             </h1>
             <p className="text-white/50 text-lg leading-relaxed">
               Lorem ipsum dolor sit amet. Qui exercitationem corporis aut
@@ -48,10 +48,10 @@ export default async function PartnersPage() {
         </div>
       </div>
 
-      {/* Partners Content */}
+      {/* Community Content */}
       <main className="px-6 pb-12">
         <div className="max-w-7xl mx-auto">
-          <PartnersList />
+          <CommunityList />
         </div>
       </main>
     </div>
