@@ -89,16 +89,25 @@ export async function GET(request: NextRequest) {
     }
 
     try {
-      // Fetch data from Airtable
-      const airtableData = await fetchExpertsFromAirtable(
-        100,
-        offset ?? undefined
-      );
+      // Fetch ALL data from Airtable (not just first 100)
+      let allAirtableRecords: AirtableRecord[] = [];
+      let airtableOffset: string | undefined = offset ?? undefined;
 
-      // Map Airtable records to our Expert interface
-      const allExperts = airtableData.records.map(mapAirtableRecordToExpert);
+      // Fetch all pages from Airtable
+      do {
+        const airtableData = await fetchExpertsFromAirtable(
+          100, // Airtable page size
+          airtableOffset
+        );
 
-      // Implement pagination
+        allAirtableRecords = allAirtableRecords.concat(airtableData.records);
+        airtableOffset = airtableData.offset;
+      } while (airtableOffset);
+
+      // Map ALL Airtable records to our Expert interface
+      const allExperts = allAirtableRecords.map(mapAirtableRecordToExpert);
+
+      // Implement pagination on the complete dataset
       const startIndex = (page - 1) * limit;
       const endIndex = startIndex + limit;
       const paginatedExperts = allExperts.slice(startIndex, endIndex);
@@ -118,7 +127,11 @@ export async function GET(request: NextRequest) {
           hasPrevPage,
           limit,
         },
-        airtableOffset: airtableData.offset, // For Airtable pagination if needed
+        debug: {
+          totalRecordsFromAirtable: allExperts.length,
+          requestedPage: page,
+          requestedLimit: limit,
+        },
       });
     } catch (airtableError) {
       console.error("Airtable fetch error:", airtableError);

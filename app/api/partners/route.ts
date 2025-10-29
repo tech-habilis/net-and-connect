@@ -81,16 +81,25 @@ export async function GET(request: NextRequest) {
     }
 
     try {
-      // Fetch data from Airtable
-      const airtableData = await fetchPartnersFromAirtable(
-        100,
-        offset ?? undefined
-      );
+      // Fetch ALL data from Airtable (not just first 100)
+      let allAirtableRecords: AirtableRecord[] = [];
+      let airtableOffset: string | undefined = offset ?? undefined;
 
-      // Map Airtable records to our Partner interface
-      const allPartners = airtableData.records.map(mapAirtableRecordToPartner);
+      // Fetch all pages from Airtable
+      do {
+        const airtableData = await fetchPartnersFromAirtable(
+          100, // Airtable page size
+          airtableOffset
+        );
 
-      // Implement pagination
+        allAirtableRecords = allAirtableRecords.concat(airtableData.records);
+        airtableOffset = airtableData.offset;
+      } while (airtableOffset);
+
+      // Map ALL Airtable records to our Partner interface
+      const allPartners = allAirtableRecords.map(mapAirtableRecordToPartner);
+
+      // Implement pagination on the complete dataset
       const startIndex = (page - 1) * limit;
       const endIndex = startIndex + limit;
       const paginatedPartners = allPartners.slice(startIndex, endIndex);
@@ -110,7 +119,11 @@ export async function GET(request: NextRequest) {
           hasPrevPage,
           limit,
         },
-        airtableOffset: airtableData.offset, // For Airtable pagination if needed
+        debug: {
+          totalRecordsFromAirtable: allPartners.length,
+          requestedPage: page,
+          requestedLimit: limit,
+        },
       });
     } catch (airtableError) {
       console.error("Airtable fetch error:", airtableError);

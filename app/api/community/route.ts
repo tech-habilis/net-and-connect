@@ -87,18 +87,27 @@ export async function GET(request: NextRequest) {
     }
 
     try {
-      // Fetch data from Airtable
-      const airtableData = await fetchCommunityFromAirtable(
-        100,
-        offset ?? undefined
-      );
+      // Fetch ALL data from Airtable (not just first 100)
+      let allAirtableRecords: AirtableRecord[] = [];
+      let airtableOffset: string | undefined = offset ?? undefined;
 
-      // Map Airtable records to our Community interface
-      const allCommunityMembers = airtableData.records.map(
+      // Fetch all pages from Airtable
+      do {
+        const airtableData = await fetchCommunityFromAirtable(
+          100, // Airtable page size
+          airtableOffset
+        );
+
+        allAirtableRecords = allAirtableRecords.concat(airtableData.records);
+        airtableOffset = airtableData.offset;
+      } while (airtableOffset);
+
+      // Map ALL Airtable records to our Community interface
+      const allCommunityMembers = allAirtableRecords.map(
         mapAirtableRecordToCommunity
       );
 
-      // Implement pagination
+      // Implement pagination on the complete dataset
       const startIndex = (page - 1) * limit;
       const endIndex = startIndex + limit;
       const paginatedCommunityMembers = allCommunityMembers.slice(
@@ -121,7 +130,11 @@ export async function GET(request: NextRequest) {
           hasPrevPage,
           limit,
         },
-        airtableOffset: airtableData.offset, // For Airtable pagination if needed
+        debug: {
+          totalRecordsFromAirtable: allCommunityMembers.length,
+          requestedPage: page,
+          requestedLimit: limit,
+        },
       });
     } catch (airtableError) {
       console.error("Airtable fetch error:", airtableError);
