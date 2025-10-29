@@ -70,10 +70,22 @@ export default function SignInPage({ searchParams }: SignInPageProps) {
           )}
 
           <SignInForm />
+
+          {/* Watermark directly below form on mobile only */}
+          <div className="mt-6 -mx-4 flex justify-center md:hidden">
+            <Image
+              src="/assets/auth/login-watermark.png"
+              alt="NET&CONNECT Watermark"
+              width={800}
+              height={140}
+              className="object-contain w-screen max-w-none h-auto px-4"
+              unoptimized
+            />
+          </div>
         </div>
 
-        {/* Watermark section - outside main content to avoid width constraints */}
-        <div className="flex justify-center px-4 mb-12 md:mb-24">
+        {/* Watermark section - for desktop only */}
+        <div className="hidden md:flex justify-center px-4 mb-12 md:mb-24">
           <Image
             src="/assets/auth/login-watermark.png"
             alt="NET&CONNECT Watermark"

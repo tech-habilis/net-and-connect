@@ -140,15 +140,17 @@ export function EventsList() {
                     <MapPin className="w-4 h-4" />
                     {featuredEvent.location}
                   </div>
-                  <div
-                    className="text-gray-300 text-md leading-relaxed max-w-lg line-clamp-5"
-                    dangerouslySetInnerHTML={{
-                      __html: (featuredEvent.description || "").replace(
-                        /\n/g,
-                        "<br>"
-                      ),
-                    }}
-                  />
+                  <div className="hidden md:block">
+                    <div
+                      className="text-gray-300 text-md leading-relaxed max-w-lg line-clamp-5"
+                      dangerouslySetInnerHTML={{
+                        __html: (featuredEvent.description || "").replace(
+                          /\n/g,
+                          "<br>"
+                        ),
+                      }}
+                    />
+                  </div>
                 </div>
                 <button
                   onClick={() => window.open(featuredEvent.url, "_blank")}
