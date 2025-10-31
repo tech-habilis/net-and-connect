@@ -27,6 +27,7 @@ export interface Partner {
 
 export interface Event {
   id: string;
+  api_id?: string; // Luma API ID for joining events
   title: string;
   description?: string;
   start: string; // ISO format

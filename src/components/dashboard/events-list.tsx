@@ -4,14 +4,20 @@ import { useState, useEffect } from "react";
 import { MapPin, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Event } from "@/types/dashboard.types";
 import { EventCard } from "./event-card";
+import { JoinEventModal } from "./join-event-modal";
 
-export function EventsList() {
+interface EventsListProps {
+  userEmail?: string;
+}
+
+export function EventsList({ userEmail }: EventsListProps) {
   const [featuredEvent, setFeaturedEvent] = useState<Event | null>(null);
   const [allUpcomingEvents, setAllUpcomingEvents] = useState<Event[]>([]);
   const [allFinishedEvents, setAllFinishedEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [upcomingPage, setUpcomingPage] = useState(1);
   const [finishedPage, setFinishedPage] = useState(1);
+  const [featuredModalOpen, setFeaturedModalOpen] = useState(false);
 
   const eventsPerPage = 4;
 
@@ -153,10 +159,16 @@ export function EventsList() {
                   </div>
                 </div>
                 <button
-                  onClick={() => window.open(featuredEvent.url, "_blank")}
+                  onClick={() => {
+                    if (userEmail) {
+                      setFeaturedModalOpen(true);
+                    } else {
+                      window.open(featuredEvent.url, "_blank");
+                    }
+                  }}
                   className="bg-lime-200 text-black px-6 py-2 rounded-md font-bold text-sm hover:bg-[#B5E547] transition-colors uppercase cursor-pointer flex items-center gap-2"
                 >
-                  S’INSCRIRE
+                  S'INSCRIRE
                   <ArrowUpRight className="w-4 h-4" />
                 </button>
               </div>
@@ -173,7 +185,7 @@ export function EventsList() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {upcomingEvents.map((event: Event) => (
-              <EventCard key={event.id} event={event} />
+              <EventCard key={event.id} event={event} userEmail={userEmail} />
             ))}
           </div>
 
@@ -212,7 +224,7 @@ export function EventsList() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {finishedEvents.map((event: Event) => (
-              <EventCard key={event.id} event={event} />
+              <EventCard key={event.id} event={event} userEmail={userEmail} />
             ))}
           </div>
 
@@ -264,6 +276,16 @@ export function EventsList() {
           </svg>
         </button>
       </div>
+
+      {/* Featured Event Modal */}
+      {featuredEvent && userEmail && (
+        <JoinEventModal
+          event={featuredEvent}
+          isOpen={featuredModalOpen}
+          onClose={() => setFeaturedModalOpen(false)}
+          userEmail={userEmail}
+        />
+      )}
     </div>
   );
 }

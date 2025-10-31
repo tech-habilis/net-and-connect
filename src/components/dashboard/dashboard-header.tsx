@@ -3,24 +3,35 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronDown, Coins, Menu, X } from "lucide-react";
+import { ChevronDown, Coins, Menu, X, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useState, useRef, useEffect } from "react";
+import { useUserProfile } from "@/hooks/useUserProfile";
 
 interface DashboardHeaderProps {
   user?: {
     name?: string | null;
     email?: string | null;
+    userData?: {
+      id: string;
+      email: string;
+      first_name?: string;
+      last_name?: string;
+      token: number;
+    };
   };
 }
 
-export function DashboardHeader({ user }: DashboardHeaderProps) {
+export function DashboardHeader() {
   const pathname = usePathname();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+
+  // Use the hook to get fresh user data
+  const { user, loading, refetch } = useUserProfile();
 
   const navigationItems = [
     { label: "HOME", path: "/dashboard", active: pathname === "/dashboard" },
@@ -117,10 +128,15 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
             <Button
               variant="ghost"
               className="bg-lime-200 text-black text-sm md:text-lg font-semibold flex items-center gap-2 rounded-xl hover:bg-lime-300 px-2 md:px-4"
+              onClick={() => refetch()}
+              disabled={loading}
             >
               <Coins className="w-4 h-4" />
-              <span className="hidden sm:inline">10 JTEONS</span>
-              <span className="sm:hidden">10 J.</span>
+              <span className="hidden sm:inline">
+                {user?.userData?.token || 0} JTEONS
+              </span>
+              <span className="sm:hidden">{user?.userData?.token || 0} J.</span>
+              {loading && <RefreshCw className="w-3 h-3 animate-spin ml-1" />}
             </Button>
           </div>
 

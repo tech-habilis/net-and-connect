@@ -31,7 +31,6 @@ export function PartnersList() {
       }
 
       const data = await response.json();
-      console.log("Partners API Response:", data); // Debug log
       setPartners(data.partners || []);
 
       // Get total pages from the pagination object in the response
@@ -39,12 +38,6 @@ export function PartnersList() {
       const totalCount =
         data.pagination?.totalCount || data.partners?.length || 0;
 
-      console.log(
-        "Partners - Total count:",
-        totalCount,
-        "Total pages from API:",
-        totalPagesFromAPI
-      ); // Debug log
       setTotalPages(totalPagesFromAPI);
     } catch (error) {
       console.error("Failed to load partners:", error);

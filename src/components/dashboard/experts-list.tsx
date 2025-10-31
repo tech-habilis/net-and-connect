@@ -39,7 +39,6 @@ export function ExpertsList() {
       }
 
       const data = await response.json();
-      console.log("API Response:", data); // Debug log
       setExperts(data.experts || []);
 
       // Get total pages from the pagination object in the response
@@ -47,13 +46,6 @@ export function ExpertsList() {
       const totalCount =
         data.pagination?.totalCount || data.experts?.length || 0;
 
-      console.log(
-        "Total count:",
-        totalCount,
-        "Total pages from API:",
-        totalPagesFromAPI
-      ); // Debug log
-      console.log("Debug info from API:", data.debug); // Additional debug info
       setTotalPages(totalPagesFromAPI);
     } catch (error) {
       console.error("Failed to load experts:", error);

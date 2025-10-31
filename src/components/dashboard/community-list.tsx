@@ -32,7 +32,6 @@ export function CommunityList() {
       }
 
       const data = await response.json();
-      console.log("Community API Response:", data); // Debug log
       setCommunityMembers(data.community || []);
 
       // Get total pages from the pagination object in the response
@@ -40,12 +39,6 @@ export function CommunityList() {
       const totalCount =
         data.pagination?.totalCount || data.community?.length || 0;
 
-      console.log(
-        "Community - Total count:",
-        totalCount,
-        "Total pages from API:",
-        totalPagesFromAPI
-      ); // Debug log
       setTotalPages(totalPagesFromAPI);
     } catch (error) {
       console.error("Failed to load community:", error);
