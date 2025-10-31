@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { PrismaClient } from "@prisma/client";
 import { brevoEmailService } from "./brevo";
+import { UserService, UserData } from "@/services/user.service";
 
 export const runtime = "nodejs";
 
@@ -33,6 +34,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     verifyRequest: "/verify-request",
   },
   callbacks: {
+    async session({ session, user }) {
+      if (session?.user?.email) {
+        // Get fresh user data from Airtable for each session
+        const userData = await UserService.findUserByEmail(session.user.email);
+        if (userData) {
+          session.user.userData = userData;
+        }
+      }
+      return session;
+    },
+
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
       const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
@@ -49,3 +61,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     strategy: "database",
   },
 });
+
+// Type augmentation for NextAuth
+declare module "next-auth" {
+  interface User {
+    userData?: UserData;
+  }
+
+  interface Session {
+    user: {
+      id?: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+      userData?: UserData;
+    };
+  }
+}

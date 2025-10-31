@@ -5,6 +5,7 @@ import {
   createAuthCookie,
 } from "@/lib/magic-link";
 import { brevoEmailService } from "@/lib/brevo";
+import { UserService } from "@/services/user.service";
 
 export const runtime = "nodejs";
 
@@ -25,8 +26,18 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Create auth cookie
-    const cookieValue = createAuthCookie(verification.email!);
+    // Get or create user in Airtable
+    const userData = await UserService.getOrCreateUser(verification.email!);
+
+    if (!userData) {
+      console.error("❌ Failed to get or create user data");
+      return NextResponse.redirect(
+        new URL(`/sign-in?error=user-creation-failed`, request.url)
+      );
+    }
+
+    // Create auth cookie with user data
+    const cookieValue = createAuthCookie(verification.email!, userData);
 
     const response = NextResponse.redirect(new URL("/dashboard", request.url));
     response.cookies.set("nc_auth", cookieValue, {

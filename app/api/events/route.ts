@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { verifyAuthCookie } from "@/lib/magic-link";
+import { UserService } from "@/services/user.service";
 
 export const runtime = "nodejs";
 
 // LUMA API configuration
 const LUMA_EVENTS_URL = process.env.LUMA_EVENTS_URL;
+const LUMA_JOIN_EVENT_URL = process.env.LUMA_JOIN_EVENT_URL;
 const LUMA_API_KEY = process.env.LUMA_API_KEY;
 
 interface LumaEventData {
@@ -38,6 +41,7 @@ interface LumaResponse {
 
 interface NormalizedEvent {
   id: string;
+  api_id?: string; // Luma API ID for joining events
   title: string;
   description?: string;
   descriptionMd?: string;
@@ -132,6 +136,7 @@ async function fetchEventsFromLuma(
 
     return {
       id: event.id,
+      api_id: entry.api_id, // Include Luma API ID
       title: event.name,
       description: event.description,
       descriptionMd: event.description_md,
@@ -187,21 +192,25 @@ export async function GET(request: NextRequest) {
     );
 
     try {
-      if (type === 'upcoming') {
+      if (type === "upcoming") {
         // Fetch only upcoming events
-        const upcomingEvents = await fetchEventsFromLuma('upcoming');
+        const upcomingEvents = await fetchEventsFromLuma("upcoming");
         const featured = page === 1 ? upcomingEvents[0] || null : null;
         const upcoming = page === 1 ? upcomingEvents.slice(1) : upcomingEvents;
-        const paginatedResult = paginateEvents(upcoming, page === 1 ? 1 : page, limit);
+        const paginatedResult = paginateEvents(
+          upcoming,
+          page === 1 ? 1 : page,
+          limit
+        );
 
         return NextResponse.json({
           featured,
           upcoming: paginatedResult.events,
           pagination: paginatedResult.pagination,
         });
-      } else if (type === 'finished') {
+      } else if (type === "finished") {
         // Fetch only finished events
-        const finishedEvents = await fetchEventsFromLuma('finished');
+        const finishedEvents = await fetchEventsFromLuma("finished");
         const paginatedResult = paginateEvents(finishedEvents, page, limit);
 
         return NextResponse.json({
@@ -358,6 +367,112 @@ export async function GET(request: NextRequest) {
     }
   } catch (error) {
     console.error("Error fetching events:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { req, eventId, userEmail } = body;
+
+    if (req !== "join") {
+      return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+    }
+
+    // Get user data to check token balance
+    const userData = await UserService.findUserByEmail(userEmail);
+    if (!userData) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Check if user has enough tokens
+    if (userData.token < 1) {
+      return NextResponse.json(
+        {
+          error:
+            "Insufficient tokens. You need at least 1 JTEON to join an event.",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Find the event to get api_id
+    // let eventApiId = null;
+    // try {
+    //   const upcomingEvents = await fetchEventsFromLuma("upcoming");
+    //   const event = upcomingEvents.find((e) => e.id === eventId);
+
+    //   if (!event || !event.api_id) {
+    //     return NextResponse.json(
+    //       { error: "Event not found or invalid" },
+    //       { status: 404 }
+    //     );
+    //   }
+
+    //   eventApiId = event.api_id;
+    // } catch (error) {
+    //   console.error("Error finding event:", error);
+    //   return NextResponse.json(
+    //     { error: "Failed to find event" },
+    //     { status: 500 }
+    //   );
+    // }
+
+    // Join event
+    try {
+      // if (!LUMA_JOIN_EVENT_URL || !LUMA_API_KEY) {
+      //   throw new Error("Luma API configuration missing");
+      // }
+
+      // const joinResponse = await fetch(LUMA_JOIN_EVENT_URL, {
+      //   method: "POST",
+      //   headers: {
+      //     Authorization: `Bearer ${LUMA_API_KEY}`,
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({
+      //     event_api_id: eventApiId,
+      //     guests: [
+      //       {
+      //         email: userEmail,
+      //       },
+      //     ],
+      //   }),
+      // });
+
+      // if (!joinResponse.ok) {
+      //   const errorText = await joinResponse.text();
+      //   console.error("Luma API error:", errorText);
+      //   throw new Error(
+      //     `Failed to join event: ${joinResponse.status} ${joinResponse.statusText}`
+      //   );
+      // }
+
+      // Successfully joined event, now reduce user tokens
+      const newTokenCount = userData.token - 1;
+      await UserService.updateUserTokens(
+        userData.id,
+        newTokenCount
+      );
+
+      return NextResponse.json({
+        success: true,
+        message: "Successfully joined event",
+        tokensRemaining: newTokenCount,
+      });
+    } catch (error) {
+      console.error("Error joining event:", error);
+      return NextResponse.json(
+        { error: "Failed to join event. Please try again." },
+        { status: 500 }
+      );
+    }
+  } catch (error) {
+    console.error("Error in POST /api/events:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

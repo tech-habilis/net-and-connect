@@ -1,10 +1,17 @@
 import { createHmac, timingSafeEqual } from "crypto";
+import { UserData } from "@/services/user.service";
 
 const SECRET_KEY = process.env.NEXTAUTH_SECRET || "fallback-secret-key";
 
 export interface MagicLinkPayload {
   email: string;
   exp: number; // expiration timestamp
+}
+
+export interface AuthCookiePayload {
+  email: string;
+  exp: number;
+  userData?: UserData;
 }
 
 export function createMagicLink(email: string): string {
@@ -65,10 +72,11 @@ export function verifyMagicLink(token: string): {
   }
 }
 
-export function createAuthCookie(email: string): string {
-  const payload = {
+export function createAuthCookie(email: string, userData?: UserData): string {
+  const payload: AuthCookiePayload = {
     email,
     exp: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
+    userData,
   };
 
   const payloadStr = JSON.stringify(payload);
@@ -84,6 +92,7 @@ export function createAuthCookie(email: string): string {
 export function verifyAuthCookie(cookieValue: string): {
   valid: boolean;
   email?: string;
+  userData?: UserData;
 } {
   try {
     const [payloadBase64, signature] = cookieValue.split(".");
@@ -106,14 +115,18 @@ export function verifyAuthCookie(cookieValue: string): {
 
     // Parse payload
     const payloadStr = Buffer.from(payloadBase64, "base64url").toString();
-    const payload = JSON.parse(payloadStr);
+    const payload: AuthCookiePayload = JSON.parse(payloadStr);
 
     // Check expiration
     if (Date.now() > payload.exp) {
       return { valid: false };
     }
 
-    return { valid: true, email: payload.email };
+    return {
+      valid: true,
+      email: payload.email,
+      userData: payload.userData,
+    };
   } catch (error) {
     return { valid: false };
   }

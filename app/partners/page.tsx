@@ -20,15 +20,9 @@ export default async function PartnersPage() {
     redirect("/sign-in");
   }
 
-  // Create a user object with the email from the cookie
-  const user = {
-    email: verification.email,
-    name: verification.email?.split("@")[0],
-  };
-
   return (
     <div className="min-h-screen bg-black text-white">
-      <DashboardHeader user={user} />
+      <DashboardHeader />
 
       {/* Hero Section */}
       <div className="relative py-16 px-6">

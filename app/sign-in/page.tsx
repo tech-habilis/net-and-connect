@@ -18,6 +18,8 @@ export default function SignInPage({ searchParams }: SignInPageProps) {
         return "The magic link is missing. Please request a new one.";
       case "expired":
         return "The magic link has expired. Please request a new one.";
+      case "user-creation-failed":
+        return "Failed to create user account. Please try again.";
       default:
         return "An error occurred during sign-in. Please try again.";
     }

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { verifyAuthCookie } from "@/lib/magic-link";
+import { UserService } from "@/services/user.service";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { MembersTable } from "@/components/dashboard/members-table";
 import { EventsList } from "@/components/dashboard/events-list";
@@ -21,15 +22,16 @@ export default async function DashboardPage() {
     redirect("/sign-in");
   }
 
-  // Create a user object with the email from the cookie
-  const user = {
-    email: verification.email,
-    name: verification.email?.split("@")[0],
-  };
+  // Get fresh user data from Airtable if not in cookie or if we need latest data
+  let userData = verification.userData;
+  if (!userData && verification.email) {
+    const freshUserData = await UserService.findUserByEmail(verification.email);
+    userData = freshUserData || undefined;
+  }
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <DashboardHeader user={user} />
+      <DashboardHeader />
 
       {/* Hero Section */}
       <div className="relative py-16 px-6">
@@ -53,7 +55,7 @@ export default async function DashboardPage() {
       {/* Events Content */}
       <main className="px-6 pb-12">
         <div className="max-w-7xl mx-auto">
-          <EventsList />
+          <EventsList userEmail={verification.email || undefined} />
         </div>
       </main>
     </div>
