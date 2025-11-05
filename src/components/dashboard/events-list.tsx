@@ -195,7 +195,7 @@ export function EventsList({ userEmail }: EventsListProps) {
               <button
                 onClick={() => setUpcomingPage((prev) => Math.max(1, prev - 1))}
                 disabled={upcomingPage === 1}
-                className="w-12 h-12 bg-gray-700 rounded-xl flex items-center justify-center hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-12 h-12 bg-gray-700 rounded-xl flex items-center justify-center hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 <ChevronLeft className="w-5 h-5 text-white" />
               </button>
@@ -207,7 +207,7 @@ export function EventsList({ userEmail }: EventsListProps) {
                   )
                 }
                 disabled={upcomingPage === upcomingTotalPages}
-                className="w-12 h-12 bg-lime-200 rounded-xl flex items-center justify-center hover:bg-[#B5E547] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-12 h-12 bg-lime-200 rounded-xl flex items-center justify-center hover:bg-[#B5E547] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 <ChevronRight className="w-5 h-5 text-black" />
               </button>
@@ -234,7 +234,7 @@ export function EventsList({ userEmail }: EventsListProps) {
               <button
                 onClick={() => setFinishedPage((prev) => Math.max(1, prev - 1))}
                 disabled={finishedPage === 1}
-                className="w-12 h-12 bg-gray-700 rounded-xl flex items-center justify-center hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-12 h-12 bg-gray-700 rounded-xl flex items-center justify-center hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 <ChevronLeft className="w-5 h-5 text-white" />
               </button>
@@ -246,7 +246,7 @@ export function EventsList({ userEmail }: EventsListProps) {
                   )
                 }
                 disabled={finishedPage === finishedTotalPages}
-                className="w-12 h-12 bg-lime-200 rounded-xl flex items-center justify-center hover:bg-[#B5E547] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-12 h-12 bg-lime-200 rounded-xl flex items-center justify-center hover:bg-[#B5E547] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 <ChevronRight className="w-5 h-5 text-black" />
               </button>
@@ -259,7 +259,7 @@ export function EventsList({ userEmail }: EventsListProps) {
       <div className="flex justify-center pt-8">
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="w-12 h-12 bg-lime-200 rounded-full flex items-center justify-center hover:bg-[#B5E547] transition-colors"
+          className="w-12 h-12 bg-lime-200 rounded-full flex items-center justify-center hover:bg-[#B5E547] transition-colors cursor-pointer"
         >
           <svg
             className="w-5 h-5 text-black"

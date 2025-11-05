@@ -25,7 +25,7 @@ export async function signInAction(data: SignInFormData) {
       success: true,
       message: result.dev_link
         ? `Development mode: ${result.dev_link}`
-        : "Magic link sent to your email!",
+        : " Le lien magique a été envoyé sur ton mail",
     };
   } catch (error) {
     console.error("Sign-in error:", error);
