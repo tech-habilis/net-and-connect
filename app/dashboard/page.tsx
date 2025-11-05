@@ -38,8 +38,8 @@ export default async function DashboardPage() {
         <div className="max-w-7xl mx-auto">
           <div className="max-w-2xl">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-              DÉCOUVREZ NOS{" "}
-              <span className="text-[#CEEA8E]">ÉVENEMENTS PADEL</span>
+              DECOUVREZ NOS{" "}
+              <span className="text-[#CEEA8E]">EVENEMENTS PADEL</span>
             </h1>
             <p className="text-white/50 text-lg leading-relaxed">
               Lorem ipsum dolor sit amet. Qui exercitationem corporis aut

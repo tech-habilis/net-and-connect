@@ -84,10 +84,27 @@ export default function SignInPage({ searchParams }: SignInPageProps) {
               unoptimized
             />
           </div>
+
+          {/* Moving catwalks watermark - mobile only */}
+          <div className="overflow-hidden w-3/4 mx-auto mt-6 relative md:hidden">
+            <div className="flex animate-marquee">
+              {[...Array(14)].map((_, index) => (
+                <Image
+                  key={index}
+                  src="/assets/catwalks.png"
+                  alt="Catwalks"
+                  width={60}
+                  height={30}
+                  className="object-contain flex-shrink-0 mx-2 opacity-70"
+                  unoptimized
+                />
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Watermark section - for desktop only */}
-        <div className="hidden md:flex justify-center px-4 mb-12 md:mb-24">
+        <div className="hidden md:flex justify-center px-4 mb-8">
           <Image
             src="/assets/auth/login-watermark.png"
             alt="NET&CONNECT Watermark"
@@ -96,6 +113,23 @@ export default function SignInPage({ searchParams }: SignInPageProps) {
             className="object-contain w-full max-w-xs md:max-w-md lg:max-w-2xl h-auto"
             unoptimized
           />
+        </div>
+
+        {/* Moving catwalks watermark - desktop only */}
+        <div className="hidden md:block overflow-hidden w-1/2 mx-auto mb-18 md:mb-36 relative">
+          <div className="flex animate-marquee">
+            {[...Array(14)].map((_, index) => (
+              <Image
+                key={index}
+                src="/assets/catwalks.png"
+                alt="Catwalks"
+                width={120}
+                height={60}
+                className="object-contain flex-shrink-0 mx-4 opacity-70"
+                unoptimized
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>

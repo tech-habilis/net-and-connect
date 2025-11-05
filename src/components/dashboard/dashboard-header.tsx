@@ -166,7 +166,7 @@ export function DashboardHeader() {
                   <div className="py-2">
                     <button
                       onClick={handleSignOut}
-                      className="w-full px-4 py-3 text-left text-black font-bold text-sm transition-colors rounded-xl mx-2 hover:bg-black hover:bg-opacity-10 cursor-pointer"
+                      className="w-full px-4 py-3 text-left text-black font-bold text-sm transition-colors rounded-xl mx-2 cursor-pointer"
                     >
                       DECONNEXION
                     </button>

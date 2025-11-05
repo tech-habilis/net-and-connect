@@ -29,9 +29,9 @@ export class ResendEmailService {
       const { data, error } = await this.resend.emails.send({
         from: this.fromEmail,
         to: [to],
-        subject: "Your magic link to sign in",
+        subject: "Votre lien magique pour vous connecter",
         html: this.generateMagicLinkEmail(magicLink),
-        text: `Sign in to Net&Connect\n\nClick the link below to sign in:\n${magicLink}\n\nThis link will expire in 20 minutes.`,
+        text: `Connectez-vous à Net&Connect\n\nCliquez sur le lien ci-dessous pour vous connecter :\n${magicLink}\n\nCe lien expirera dans 20 minutes.`,
       });
 
       if (error) {
@@ -52,7 +52,7 @@ export class ResendEmailService {
       <html>
         <head>
           <meta charset="utf-8">
-          <title>Sign in to Net&Connect</title>
+          <title>Connexion à Net&Connect</title>
           <style>
             body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
             .container { max-width: 600px; margin: 0 auto; padding: 20px; }
@@ -75,29 +75,29 @@ export class ResendEmailService {
           <div class="container">
             <div class="header">
               <div class="logo">Net&Connect</div>
-              <h1>Sign in to your account</h1>
+              <h1>Connectez-vous à votre compte</h1>
             </div>
             
-            <p>Hello,</p>
+            <p>Bonjour,</p>
             
-            <p>You requested to sign in to your Net&Connect account. Click the button below to sign in:</p>
+            <p>Vous avez demandé à vous connecter à votre compte Net&Connect. Cliquez sur le bouton ci-dessous pour vous connecter :</p>
             
             <div style="text-align: center;">
-              <a href="${magicLink}" class="button">Sign in to Net&Connect</a>
+              <a href="${magicLink}" class="button">Se connecter à Net&Connect</a>
             </div>
             
-            <p>If you didn't request this, you can safely ignore this email.</p>
+            <p>Si vous n'avez pas fait cette demande, vous pouvez ignorer cet email en toute sécurité.</p>
             
-            <p>This link will expire in 20 minutes for security reasons.</p>
+            <p>Ce lien expirera dans 20 minutes pour des raisons de sécurité.</p>
             
             <div class="footer">
-              <p>Best regards,<br>The Net&Connect Team</p>
-              <p><em>If the button doesn't work, you can copy and paste this link into your browser:</em><br>
+              <p>Cordialement,<br>L'équipe Net&Connect</p>
+              <p><em>Si le bouton ne fonctionne pas, vous pouvez copier et coller ce lien dans votre navigateur :</em><br>
               <a href="${magicLink}">${magicLink}</a></p>
             </div>
           </div>
         </body>
-      </html>
+      </html>e
     `;
   }
 }
