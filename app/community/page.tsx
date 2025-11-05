@@ -29,7 +29,7 @@ export default async function CommunityPage() {
         <div className="max-w-7xl mx-auto">
           <div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-              NOTRE <span className="text-lime-200">COMMUNAUTÉ</span>
+              NOTRE <span className="text-lime-200">COMMUNAUTE</span>
             </h1>
             <p className="text-white/50 text-lg leading-relaxed">
               Lorem ipsum dolor sit amet. Qui exercitationem corporis aut

@@ -44,7 +44,7 @@ export function DashboardHeader() {
       active: pathname === "/partners",
     },
     {
-      label: "NOTRE COMMUNAUTÉ",
+      label: "NOTRE COMMUNAUTE",
       path: "/community",
       active: pathname === "/community",
     },
