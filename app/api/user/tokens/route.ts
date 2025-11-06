@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Check if user has enough tokens
-      if (userData.token < amount) {
+      if (userData.tokens < amount) {
         return NextResponse.json(
           { error: "Insufficient tokens" },
           { status: 400 }
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Update tokens
-      const newTokenAmount = userData.token - amount;
+      const newTokenAmount = userData.tokens - amount;
       const updatedUser = await UserService.updateUserTokens(
         userData.id,
         newTokenAmount
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
         transaction: {
           type: "spend",
           amount: amount,
-          previousBalance: userData.token,
+          previousBalance: userData.tokens,
           newBalance: newTokenAmount,
         },
       });
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Update tokens
-      const newTokenAmount = userData.token + amount;
+      const newTokenAmount = userData.tokens + amount;
       const updatedUser = await UserService.updateUserTokens(
         userData.id,
         newTokenAmount
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
         transaction: {
           type: "add",
           amount: amount,
-          previousBalance: userData.token,
+          previousBalance: userData.tokens,
           newBalance: newTokenAmount,
         },
       });
