@@ -4,7 +4,7 @@ export const runtime = "nodejs";
 
 // Airtable configuration
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
-const AIRTABLE_TABLE_NAME = "expert_users";
+const AIRTABLE_TABLE_NAME = "Nos experts";
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
 
 interface AirtableRecord {
@@ -16,6 +16,7 @@ interface AirtableRecord {
     description?: string;
     image?: string;
     title?: string;
+    website?: string;
   };
 }
 
@@ -40,7 +41,7 @@ async function fetchExpertsFromAirtable(
 
   // Add query parameters
   url.searchParams.append("pageSize", pageSize.toString());
-  url.searchParams.append("sort[0][field]", "name");
+  url.searchParams.append("sort[0][field]", "id");
   url.searchParams.append("sort[0][direction]", "asc");
 
   if (offset) {
@@ -73,6 +74,7 @@ function mapAirtableRecordToExpert(record: AirtableRecord) {
     description: record.fields.description || "",
     image: record.fields.image || "",
     title: record.fields.title || "",
+    website: record.fields.website || "",
   };
 }
 

@@ -4,7 +4,7 @@ export const runtime = "nodejs";
 
 // Airtable configuration
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
-const AIRTABLE_TABLE_NAME = "partners";
+const AIRTABLE_TABLE_NAME = "Nos sponsors";
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
 
 interface AirtableRecord {

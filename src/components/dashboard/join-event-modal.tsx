@@ -168,7 +168,7 @@ export function JoinEventModal({
 
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
                   <p className="text-xs text-amber-800">
-                    <strong>Note:</strong> L'inscription à cet événement coûtera
+                    <strong>Note:</strong> L'inscription à cet evenement coûtera
                     1 JTEON de votre solde.
                   </p>
                 </div>
@@ -184,7 +184,7 @@ export function JoinEventModal({
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
                   <div className="text-green-600 text-2xl mb-2">✓</div>
                   <p className="text-sm text-green-800 font-medium">
-                    Inscription réussie !
+                    Inscription reussie !
                   </p>
                   <p className="text-xs text-green-700 mt-1">
                     Vous recevrez une confirmation par email.
@@ -203,7 +203,7 @@ export function JoinEventModal({
                 disabled={isJoining}
                 className="inline-flex w-full justify-center rounded-md bg-lime-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-lime-600 disabled:opacity-50 disabled:cursor-not-allowed sm:ml-3 sm:w-auto"
               >
-                {isJoining ? "Inscription..." : "Rejoindre l'événement"}
+                {isJoining ? "Inscription..." : "Rejoindre l'evenement"}
               </button>
               <button
                 type="button"

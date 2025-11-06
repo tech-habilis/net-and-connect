@@ -7,6 +7,7 @@ export interface Member {
   role: string;
   tokens: number;
   linkedin?: string;
+  image?: string;
 }
 
 export interface Expert {
@@ -17,6 +18,7 @@ export interface Expert {
   description: string;
   image: string;
   title: string;
+  website?: string;
 }
 
 export interface Partner {

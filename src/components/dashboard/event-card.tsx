@@ -90,11 +90,12 @@ export function EventCard({ event, userEmail }: EventCardProps) {
             <button
               onClick={(e) => {
                 e.stopPropagation(); // Prevent card click
-                setIsModalOpen(true);
+                // setIsModalOpen(true);
+                window.open(event.url, "_blank");
               }}
               className="bg-lime-200 text-black px-4 py-1.5 rounded text-xs font-bold hover:bg-[#B5E547] transition-colors uppercase flex items-center gap-1 cursor-pointer"
             >
-              DÉCOUVRIR
+              DECOUVRIR
               <ArrowUpRight className="w-3 h-3" />
             </button>
           </div>

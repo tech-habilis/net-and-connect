@@ -53,7 +53,7 @@ export function useUserProfile(): UseUserProfileReturn {
           ...user,
           userData: {
             ...user.userData,
-            token: newTokenCount,
+            tokens: newTokenCount,
           },
         });
       }

@@ -34,15 +34,27 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     verifyRequest: "/verify-request",
   },
   callbacks: {
-    async session({ session, user }) {
+    async session({ session, user, token }) {
       if (session?.user?.email) {
-        // Get fresh user data from Airtable for each session
-        const userData = await UserService.findUserByEmail(session.user.email);
-        if (userData) {
-          session.user.userData = userData;
+        // Cache user data to avoid excessive Airtable calls
+        if (!session.user.userData) {
+          const userData = await UserService.findUserByEmail(
+            session.user.email
+          );
+          if (userData) {
+            session.user.userData = userData;
+          }
         }
       }
       return session;
+    },
+
+    async jwt({ token, user }) {
+      // Persist user data in JWT for long-term storage
+      if (user) {
+        token.userData = user.userData;
+      }
+      return token;
     },
 
     authorized({ auth, request: { nextUrl } }) {
@@ -59,6 +71,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   session: {
     strategy: "database",
+    maxAge: 365 * 24 * 60 * 60, // 1 year in seconds - persist until manual logout
+    updateAge: 24 * 60 * 60, // Update session every 24 hours
+  },
+  cookies: {
+    sessionToken: {
+      name: "next-auth.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 365 * 24 * 60 * 60, // 1 year - same as session maxAge
+      },
+    },
   },
 });
 

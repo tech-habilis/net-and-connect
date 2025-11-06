@@ -11,9 +11,9 @@ const testSohneSchmal = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Net & Connect - Membres & Événements",
+  title: "Net & Connect - Membres & Evenements",
   description:
-    "Hub Padel pour gérer vos matchs, vos clients et la croissance de votre activité",
+    "Hub Padel pour gerer vos matchs, vos clients et la croissance de votre activite",
 };
 
 export default function RootLayout({
@@ -23,9 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${testSohneSchmal.variable} antialiased`}
-      >
+      <body className={`${testSohneSchmal.variable} antialiased`}>
         <SessionProvider>{children}</SessionProvider>
       </body>
     </html>

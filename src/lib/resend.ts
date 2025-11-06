@@ -80,18 +80,18 @@ export class ResendEmailService {
             
             <p>Bonjour,</p>
             
-            <p>Vous avez demandé à vous connecter à votre compte Net&Connect. Cliquez sur le bouton ci-dessous pour vous connecter :</p>
+            <p>Vous avez demande à vous connecter à votre compte Net&Connect. Cliquez sur le bouton ci-dessous pour vous connecter :</p>
             
             <div style="text-align: center;">
               <a href="${magicLink}" class="button">Se connecter à Net&Connect</a>
             </div>
             
-            <p>Si vous n'avez pas fait cette demande, vous pouvez ignorer cet email en toute sécurité.</p>
+            <p>Si vous n'avez pas fait cette demande, vous pouvez ignorer cet email en toute securite.</p>
             
-            <p>Ce lien expirera dans 20 minutes pour des raisons de sécurité.</p>
+            <p>Ce lien expirera dans 20 minutes pour des raisons de securite.</p>
             
             <div class="footer">
-              <p>Cordialement,<br>L'équipe Net&Connect</p>
+              <p>Cordialement,<br>L'equipe Net&Connect</p>
               <p><em>Si le bouton ne fonctionne pas, vous pouvez copier et coller ce lien dans votre navigateur :</em><br>
               <a href="${magicLink}">${magicLink}</a></p>
             </div>

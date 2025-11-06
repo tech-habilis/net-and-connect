@@ -8,6 +8,7 @@ import {
   Send,
   ChevronLeft,
   ChevronRight,
+  ArrowUp,
 } from "lucide-react";
 import { Expert } from "@/types/dashboard.types";
 import Image from "next/image";
@@ -19,6 +20,14 @@ export function ExpertsList() {
   const [totalPages, setTotalPages] = useState(1);
 
   const expertsPerPage = 6;
+
+  const handleExpertWebsite = (website?: string) => {
+    if (website) {
+      // Ensure the URL has a protocol
+      const url = website.startsWith("http") ? website : `https://${website}`;
+      window.open(url, "_blank");
+    }
+  };
 
   const loadExperts = async (page: number = 1) => {
     try {
@@ -79,7 +88,7 @@ export function ExpertsList() {
         {experts.map((expert) => (
           <div
             key={expert.id}
-            className="relative rounded-2xl overflow-hidden group cursor-pointer transform transition-all duration-300 hover:scale-105 border border-[#FFFFFF1A]"
+            className="relative rounded-2xl overflow-hidden group transform transition-all duration-300 hover:scale-105 border border-[#FFFFFF1A]"
           >
             {/* Expert Photo Background */}
             <div className="aspect-[7/8] relative">
@@ -119,7 +128,7 @@ export function ExpertsList() {
               {/* Development Tag - Top Right */}
               <div className="absolute top-6 right-6">
                 <span className="bg-lime-200 text-black px-3 py-1 rounded text-xs font-bold uppercase tracking-wide">
-                  DÉVELOPPEMENT WEB
+                  DEVELOPPEMENT WEB
                 </span>
               </div>
 
@@ -134,7 +143,7 @@ export function ExpertsList() {
             </div>
 
             {/* Expert Info Overlay - Bottom Section */}
-            <div className="absolute bottom-0 left-0 right-0">
+            <div className="absolute bottom-0 left-0 right-0 z-10">
               <div className="px-6">
                 {/* Description Text */}
                 <p className="text-white text-sm leading-relaxed line-clamp-3">
@@ -158,29 +167,33 @@ export function ExpertsList() {
 
                 {/* Contact Info */}
                 <div className="space-y-2 mb-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center text-white text-sm">
+                  <div className="flex items-center justify-end">
+                    {/* <div className="flex items-center text-white text-sm">
                       <Phone className="w-4 h-4 mr-3 flex-shrink-0 text-lime-200" />
                       <span>{expert.phone}</span>
-                    </div>
+                    </div> */}
                     {/* Action Button */}
-                    <div className="bg-[#EFF9D226] rounded-xl p-1">
-                      <button className="bg-lime-200 text-black px-4 py-2 rounded-md text-xs font-bold hover:bg-[#B5E547] transition-colors uppercase flex items-center gap-2 tracking-wide">
+                    <div className="bg-[#EFF9D226] rounded-xl p-1 relative z-20">
+                      <button
+                        onClick={() => handleExpertWebsite(expert.website)}
+                        disabled={!expert.website}
+                        className="bg-lime-200 text-black px-4 py-2 rounded-md text-xs font-bold hover:bg-[#B5E547] transition-colors uppercase flex items-center gap-2 tracking-wide disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer relative z-30"
+                      >
                         PRENDRE RENDEZ-VOUS
                         <ArrowUpRight className="w-3 h-3" />
                       </button>
                     </div>
                   </div>
-                  <div className="flex items-center text-white text-sm">
+                  {/* <div className="flex items-center text-white text-sm">
                     <Send className="w-4 h-4 mr-3 flex-shrink-0 text-lime-200 rotate-45" />
                     <span className="truncate">{expert.email}</span>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>
 
             {/* Hover Effect Overlay */}
-            <div className="absolute inset-0 bg-lime-200/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 bg-lime-200/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
           </div>
         ))}
       </div>
@@ -201,6 +214,16 @@ export function ExpertsList() {
           className="w-12 h-12 bg-lime-200 rounded-xl flex items-center justify-center hover:bg-[#B5E547] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           <ChevronRight className="w-5 h-5 text-black" />
+        </button>
+      </div>
+
+      {/* Scroll to top button */}
+      <div className="flex justify-center pt-8">
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="w-12 h-12 bg-lime-200 rounded-full flex items-center justify-center hover:bg-[#B5E547] transition-colors cursor-pointer"
+        >
+          <ArrowUp className="w-5 h-5 text-black" />
         </button>
       </div>
     </div>

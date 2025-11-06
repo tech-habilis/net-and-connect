@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { MapPin, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  MapPin,
+  ArrowUpRight,
+  ChevronLeft,
+  ChevronRight,
+  ArrowUp,
+} from "lucide-react";
 import { Event } from "@/types/dashboard.types";
 import { EventCard } from "./event-card";
 import { JoinEventModal } from "./join-event-modal";
@@ -116,7 +122,7 @@ export function EventsList({ userEmail }: EventsListProps) {
       {featuredEvent && (
         <div>
           <h2 className="text-white text-xl font-bold mb-6 uppercase tracking-wide">
-            <span className="text-white/60">NOS EVENTS</span> DU MOMENT
+            <span className="text-white/60">NOTRE EVENT</span> DU MOMENT
           </h2>
           <div className="relative rounded-2xl overflow-hidden aspect-[16/9] bg-gray-800">
             {featuredEvent.coverImage && (
@@ -160,11 +166,12 @@ export function EventsList({ userEmail }: EventsListProps) {
                 </div>
                 <button
                   onClick={() => {
-                    if (userEmail) {
-                      setFeaturedModalOpen(true);
-                    } else {
-                      window.open(featuredEvent.url, "_blank");
-                    }
+                    // if (userEmail) {
+                    //   setFeaturedModalOpen(true);
+                    // } else {
+                    //   window.open(featuredEvent.url, "_blank");
+                    // }
+                    window.open(featuredEvent.url, "_blank");
                   }}
                   className="bg-lime-200 text-black px-6 py-2 rounded-md font-bold text-sm hover:bg-[#B5E547] transition-colors uppercase cursor-pointer flex items-center gap-2"
                 >
@@ -220,7 +227,7 @@ export function EventsList({ userEmail }: EventsListProps) {
       {allFinishedEvents.length > 0 && (
         <div>
           <h2 className="text-white text-xl font-bold mb-6 uppercase tracking-wide">
-            <span className="text-white/60">NOS EVENTS</span> TERMINÉS
+            <span className="text-white/60">NOS EVENTS</span> PASSES
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {finishedEvents.map((event: Event) => (
@@ -261,19 +268,7 @@ export function EventsList({ userEmail }: EventsListProps) {
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           className="w-12 h-12 bg-lime-200 rounded-full flex items-center justify-center hover:bg-[#B5E547] transition-colors cursor-pointer"
         >
-          <svg
-            className="w-5 h-5 text-black"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M5 10l7-7m0 0l7 7m-7-7v18"
-            />
-          </svg>
+          <ArrowUp className="w-5 h-5 text-black" />
         </button>
       </div>
 

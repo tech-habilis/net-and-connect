@@ -114,40 +114,45 @@ async function fetchEventsFromLuma(
   const data: LumaResponse = await response.json();
 
   // Normalize the events from the new structure
-  const normalizedEvents: NormalizedEvent[] = data.entries.map((entry) => {
-    const event = entry.event;
+  const normalizedEvents: NormalizedEvent[] = data.entries
+    .filter((entry) => {
+      // Exclude events that have 'ENTERPRISE' in their tags
+      return !entry.tags || !entry.tags.includes("ENTERPRISE");
+    })
+    .map((entry) => {
+      const event = entry.event;
 
-    // Format location from geo_address_json
-    let location = "TBD";
-    if (event.geo_address_json) {
-      const geo = event.geo_address_json;
-      if (geo.full_address) {
-        location = geo.full_address;
-      } else if (geo.address && geo.city) {
-        location = `${geo.address}, ${geo.city}`;
-      } else if (geo.city && geo.region) {
-        location = `${geo.city}, ${geo.region}`;
-      } else if (geo.city) {
-        location = geo.city;
-      } else if (geo.address) {
-        location = geo.address;
+      // Format location from geo_address_json
+      let location = "TBD";
+      if (event.geo_address_json) {
+        const geo = event.geo_address_json;
+        if (geo.full_address) {
+          location = geo.full_address;
+        } else if (geo.address && geo.city) {
+          location = `${geo.address}, ${geo.city}`;
+        } else if (geo.city && geo.region) {
+          location = `${geo.city}, ${geo.region}`;
+        } else if (geo.city) {
+          location = geo.city;
+        } else if (geo.address) {
+          location = geo.address;
+        }
       }
-    }
 
-    return {
-      id: event.id,
-      api_id: entry.api_id, // Include Luma API ID
-      title: event.name,
-      description: event.description,
-      descriptionMd: event.description_md,
-      start: event.start_at,
-      end: event.end_at,
-      location,
-      url: event.url,
-      coverImage: event.cover_url,
-      timezone: event.timezone,
-    };
-  });
+      return {
+        id: event.id,
+        api_id: entry.api_id, // Include Luma API ID
+        title: event.name,
+        description: event.description,
+        descriptionMd: event.description_md,
+        start: event.start_at,
+        end: event.end_at,
+        location,
+        url: event.url,
+        coverImage: event.cover_url,
+        timezone: event.timezone,
+      };
+    });
 
   return normalizedEvents;
 }
@@ -255,7 +260,7 @@ export async function GET(request: NextRequest) {
         {
           id: "e1",
           title: "Afterwork business",
-          description: "Soirée networking pour entrepreneurs et dirigeants",
+          description: "Soiree networking pour entrepreneurs et dirigeants",
           start: "2025-10-29T18:00:00.000Z",
           end: "2025-10-29T21:00:00.000Z",
           location: "Boulogne, Paris",
@@ -265,7 +270,7 @@ export async function GET(request: NextRequest) {
         {
           id: "e2",
           title: "Afterwork business",
-          description: "Soirée networking pour entrepreneurs et dirigeants",
+          description: "Soiree networking pour entrepreneurs et dirigeants",
           start: "2025-11-05T18:00:00.000Z",
           end: "2025-11-05T21:00:00.000Z",
           location: "Boulogne, Paris",
@@ -275,7 +280,7 @@ export async function GET(request: NextRequest) {
         {
           id: "e3",
           title: "Afterwork business",
-          description: "Soirée networking pour entrepreneurs et dirigeants",
+          description: "Soiree networking pour entrepreneurs et dirigeants",
           start: "2025-11-12T18:00:00.000Z",
           end: "2025-11-12T21:00:00.000Z",
           location: "Boulogne, Paris",
@@ -285,7 +290,7 @@ export async function GET(request: NextRequest) {
         {
           id: "e4",
           title: "Afterwork business",
-          description: "Soirée networking pour entrepreneurs et dirigeants",
+          description: "Soiree networking pour entrepreneurs et dirigeants",
           start: "2025-11-19T18:00:00.000Z",
           end: "2025-11-19T21:00:00.000Z",
           location: "Boulogne, Paris",
@@ -295,7 +300,7 @@ export async function GET(request: NextRequest) {
         {
           id: "e5",
           title: "Afterwork business",
-          description: "Soirée networking pour entrepreneurs et dirigeants",
+          description: "Soiree networking pour entrepreneurs et dirigeants",
           start: "2025-11-26T18:00:00.000Z",
           end: "2025-11-26T21:00:00.000Z",
           location: "Boulogne, Paris",
@@ -308,7 +313,7 @@ export async function GET(request: NextRequest) {
         {
           id: "f1",
           title: "Afterwork business",
-          description: "Soirée networking pour entrepreneurs et dirigeants",
+          description: "Soiree networking pour entrepreneurs et dirigeants",
           start: "2025-10-21T18:00:00.000Z",
           end: "2025-10-21T21:00:00.000Z",
           location: "Boulogne, Paris",
@@ -318,7 +323,7 @@ export async function GET(request: NextRequest) {
         {
           id: "f2",
           title: "Afterwork business",
-          description: "Soirée networking pour entrepreneurs et dirigeants",
+          description: "Soiree networking pour entrepreneurs et dirigeants",
           start: "2025-10-14T18:00:00.000Z",
           end: "2025-10-14T21:00:00.000Z",
           location: "Boulogne, Paris",
@@ -328,7 +333,7 @@ export async function GET(request: NextRequest) {
         {
           id: "f3",
           title: "Afterwork business",
-          description: "Soirée networking pour entrepreneurs et dirigeants",
+          description: "Soiree networking pour entrepreneurs et dirigeants",
           start: "2025-10-07T18:00:00.000Z",
           end: "2025-10-07T21:00:00.000Z",
           location: "Boulogne, Paris",
@@ -338,7 +343,7 @@ export async function GET(request: NextRequest) {
         {
           id: "f4",
           title: "Afterwork business",
-          description: "Soirée networking pour entrepreneurs et dirigeants",
+          description: "Soiree networking pour entrepreneurs et dirigeants",
           start: "2025-09-30T18:00:00.000Z",
           end: "2025-09-30T21:00:00.000Z",
           location: "Boulogne, Paris",
@@ -390,7 +395,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user has enough tokens
-    if (userData.token < 1) {
+    if (userData.tokens < 1) {
       return NextResponse.json(
         {
           error:
@@ -453,11 +458,8 @@ export async function POST(request: NextRequest) {
       // }
 
       // Successfully joined event, now reduce user tokens
-      const newTokenCount = userData.token - 1;
-      await UserService.updateUserTokens(
-        userData.id,
-        newTokenCount
-      );
+      const newTokenCount = userData.tokens - 1;
+      await UserService.updateUserTokens(userData.id, newTokenCount);
 
       return NextResponse.json({
         success: true,

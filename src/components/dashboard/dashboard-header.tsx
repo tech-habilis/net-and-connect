@@ -8,20 +8,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useState, useRef, useEffect } from "react";
 import { useUserProfile } from "@/hooks/useUserProfile";
-
-interface DashboardHeaderProps {
-  user?: {
-    name?: string | null;
-    email?: string | null;
-    userData?: {
-      id: string;
-      email: string;
-      first_name?: string;
-      last_name?: string;
-      token: number;
-    };
-  };
-}
+import { signOut } from "next-auth/react";
 
 export function DashboardHeader() {
   const pathname = usePathname();
@@ -35,7 +22,7 @@ export function DashboardHeader() {
 
   const navigationItems = [
     { label: "HOME", path: "/dashboard", active: pathname === "/dashboard" },
-    // { label: "NOS ÉVENTS", path: "/events", active: pathname === "/events" },
+    // { label: "NOS EVENTS", path: "/events", active: pathname === "/events" },
     { label: "NOS MEMBRES", path: "/members", active: pathname === "/members" },
     { label: "NOS EXPERTS", path: "/experts", active: pathname === "/experts" },
     {
@@ -51,7 +38,17 @@ export function DashboardHeader() {
   ];
 
   const handleSignOut = async () => {
-    window.location.href = "/api/auth?req=logout";
+    try {
+      // Use NextAuth signOut for proper session cleanup
+      await signOut({
+        callbackUrl: "/sign-in",
+        redirect: true,
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Fallback to custom auth logout
+      window.location.href = "/api/auth?req=logout";
+    }
   };
 
   // Close dropdown when clicking outside
@@ -133,9 +130,11 @@ export function DashboardHeader() {
             >
               <Coins className="w-4 h-4" />
               <span className="hidden sm:inline">
-                {user?.userData?.token || 0} JTEONS
+                {user?.userData?.tokens || 0} JTEONS
               </span>
-              <span className="sm:hidden">{user?.userData?.token || 0} J.</span>
+              <span className="sm:hidden">
+                {user?.userData?.tokens || 0} J.
+              </span>
               {loading && <RefreshCw className="w-3 h-3 animate-spin ml-1" />}
             </Button>
           </div>
@@ -147,13 +146,23 @@ export function DashboardHeader() {
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
               <div className="bg-[#EFF9D226] rounded-xl p-1">
-                <Image
-                  src="/assets/avatar-placeholder.png"
-                  alt="User Avatar"
-                  width={32}
-                  height={32}
-                  className="rounded-lg"
-                />
+                {user?.userData?.image ? (
+                  <img
+                    src={user.userData.image}
+                    alt="User Avatar"
+                    width={32}
+                    height={32}
+                    className="rounded-lg w-8 h-8 object-cover"
+                  />
+                ) : (
+                  <Image
+                    src="/assets/avatar-placeholder.png"
+                    alt="User Avatar"
+                    width={32}
+                    height={32}
+                    className="rounded-lg"
+                  />
+                )}
               </div>
               <ChevronDown className="text-white w-4 h-4 mr-1" />
             </div>

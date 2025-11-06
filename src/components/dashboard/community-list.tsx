@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Community } from "@/types/dashboard.types";
 import Image from "next/image";
-import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowUpRight, ChevronLeft, ChevronRight, ArrowUp } from "lucide-react";
 
 export function CommunityList() {
   const [communityMembers, setCommunityMembers] = useState<Community[]>([]);
@@ -117,7 +117,7 @@ export function CommunityList() {
                 </div>
 
                 {/* Contact Button */}
-                <div className="bg-[#EFF9D226] rounded-xl p-1 h-11">
+                {/* <div className="bg-[#EFF9D226] rounded-xl p-1 h-11">
                   <button
                     className="bg-lime-200 text-black px-4 py-2 text-sm font-bold uppercase tracking-wide rounded-md hover:bg-lime-300 transition-colors duration-200 flex items-center gap-2 flex-shrink-0"
                     onClick={() => {
@@ -131,7 +131,7 @@ export function CommunityList() {
                     Contacter
                     <ArrowUpRight className="w-4 h-4" />
                   </button>
-                </div>
+                </div> */}
               </div>
             </div>
 
@@ -157,6 +157,16 @@ export function CommunityList() {
           className="w-12 h-12 bg-lime-200 rounded-xl flex items-center justify-center hover:bg-[#B5E547] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           <ChevronRight className="w-5 h-5 text-black" />
+        </button>
+      </div>
+
+      {/* Scroll to top button */}
+      <div className="flex justify-center pt-8">
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="w-12 h-12 bg-lime-200 rounded-full flex items-center justify-center hover:bg-[#B5E547] transition-colors cursor-pointer"
+        >
+          <ArrowUp className="w-5 h-5 text-black" />
         </button>
       </div>
     </div>

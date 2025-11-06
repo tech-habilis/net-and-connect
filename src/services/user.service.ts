@@ -4,24 +4,25 @@ export const runtime = "nodejs";
 
 // Airtable configuration
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
-const AIRTABLE_TABLE_NAME = "users"; // Table for user data
+const AIRTABLE_TABLE_NAME =
+  process.env.AIRTABLE_TABLE_NAME || "Membres du club"; // Table for user data from env
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
 
 export interface UserData {
   id: string;
   email: string;
-  first_name?: string;
-  last_name?: string;
-  token: number; // Transaction tokens
+  full_name?: string;
+  tokens: number; // Transaction tokens (Tokens restants)
+  image?: string; // User profile image
 }
 
 interface AirtableUserRecord {
   id: string;
   fields: {
-    email?: string;
-    first_name?: string;
-    last_name?: string;
-    token?: number;
+    Email?: string;
+    "Nom complet"?: string;
+    "Tokens restants"?: number;
+    Image?: string;
   };
 }
 
@@ -75,8 +76,8 @@ export class UserService {
         )}`
       );
 
-      // Filter by email
-      url.searchParams.append("filterByFormula", `{email} = "${email}"`);
+      // Filter by email (using the Email field from Airtable)
+      url.searchParams.append("filterByFormula", `{Email} = "${email}"`);
       url.searchParams.append("maxRecords", "1");
 
       const data: AirtableResponse = await this.makeAirtableRequest(
@@ -88,12 +89,18 @@ export class UserService {
       }
 
       const record = data.records[0];
+
+      // Use the Airtable fields you have: "Nom complet", "Tokens restants", and "Image"
+      const fullName = record.fields["Nom complet"] || "";
+      const tokens = record.fields["Tokens restants"] ?? 0;
+      const image = record.fields.Image || "";
+
       return {
         id: record.id,
-        email: record.fields.email || "",
-        first_name: record.fields.first_name || "",
-        last_name: record.fields.last_name || "",
-        token: record.fields.token || 0,
+        email: record.fields.Email || "",
+        full_name: fullName,
+        tokens: typeof tokens === "number" ? tokens : Number(tokens) || 0,
+        image: image,
       };
     } catch (error) {
       console.error("Error finding user by email:", error);
@@ -114,12 +121,14 @@ export class UserService {
         AIRTABLE_TABLE_NAME
       )}`;
 
+      const computedFullName =
+        `${firstName || ""} ${lastName || ""}`.trim() || email.split("@")[0];
+
       const requestBody = {
         fields: {
-          email: email,
-          first_name: firstName || "",
-          last_name: lastName || "",
-          token: 10, // Default token amount for new users
+          Email: email,
+          "Nom complet": computedFullName,
+          "Tokens restants": 10, // Default token amount for new users
         },
       };
 
@@ -130,10 +139,10 @@ export class UserService {
 
       return {
         id: data.id,
-        email: data.fields.email || email,
-        first_name: data.fields.first_name || "",
-        last_name: data.fields.last_name || "",
-        token: data.fields.token || 10,
+        email: data.fields.Email || email,
+        full_name: data.fields["Nom complet"] || computedFullName,
+        tokens: data.fields["Tokens restants"] || 10,
+        image: data.fields.Image || "",
       };
     } catch (error) {
       console.error("❌ Error creating user:", error);
@@ -161,17 +170,17 @@ export class UserService {
         method: "PATCH",
         body: JSON.stringify({
           fields: {
-            token: newTokenAmount,
+            "Tokens restants": newTokenAmount,
           },
         }),
       });
 
       return {
         id: data.id,
-        email: data.fields.email || "",
-        first_name: data.fields.first_name || "",
-        last_name: data.fields.last_name || "",
-        token: data.fields.token || 0,
+        email: data.fields.Email || "",
+        full_name: data.fields["Nom complet"] || "",
+        tokens: data.fields["Tokens restants"] || 0,
+        image: data.fields.Image || "",
       };
     } catch (error) {
       console.error("Error updating user tokens:", error);
@@ -188,7 +197,6 @@ export class UserService {
     lastName?: string
   ): Promise<UserData | null> {
     try {
-
       // First, try to find existing user
       let user = await this.findUserByEmail(email);
 

@@ -13,17 +13,30 @@ interface AirtableRecord {
   fields: {
     "Nom complet"?: string;
     Email?: string;
-    Téléphone?: string;
-    Entreprise?: string;
+    "Téléphone"?: string;
+    Entreprise?: string[]; // This is a linked record array
     Fonction?: string;
     "Tokens restants"?: number;
     LinkedIn?: string;
+    Image?: string;
+  };
+}
+
+interface EntrepriseRecord {
+  id: string;
+  fields: {
+    "Company Name"?: string;
   };
 }
 
 interface AirtableResponse {
   records: AirtableRecord[];
   offset?: string;
+  linkedRecords?: {
+    Entreprise?: {
+      [key: string]: EntrepriseRecord;
+    };
+  };
 }
 
 async function fetchMembersFromAirtable(
@@ -66,16 +79,62 @@ async function fetchMembersFromAirtable(
   return data;
 }
 
-function mapAirtableRecordToMember(record: AirtableRecord) {
+async function fetchCompanyName(companyId: string): Promise<string> {
+  if (!AIRTABLE_BASE_ID || !AIRTABLE_API_KEY) {
+    return "";
+  }
+
+  try {
+    const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/Entreprises/${companyId}`;
+
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${AIRTABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      console.error(`Failed to fetch company ${companyId}:`, response.status);
+      return "";
+    }
+
+    const data = await response.json();
+    return data.fields["Company Name"] || "";
+  } catch (error) {
+    console.error(`Error fetching company ${companyId}:`, error);
+    return "";
+  }
+}
+
+async function mapAirtableRecordToMember(record: AirtableRecord): Promise<{
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  company: string;
+  role: string;
+  tokens: number;
+  linkedin: string | undefined;
+  image: string | undefined;
+}> {
+  // Get company name from linked record
+  let companyName = "";
+  if (record.fields.Entreprise && record.fields.Entreprise.length > 0) {
+    const entrepriseId = record.fields.Entreprise[0];
+    companyName = await fetchCompanyName(entrepriseId);
+  }
+
   return {
     id: record.id,
     name: record.fields["Nom complet"] || "",
     email: record.fields["Email"] || "",
     phone: record.fields["Téléphone"] || "",
-    company: record.fields["Entreprise"] || "",
+    company: companyName,
     role: record.fields["Fonction"] || "",
     tokens: record.fields["Tokens restants"] || 0,
     linkedin: record.fields["LinkedIn"] || undefined,
+    image: record.fields["Image"] || undefined,
   };
 }
 
@@ -93,10 +152,15 @@ export async function GET(request: NextRequest) {
 
     try {
       // Fetch data from Airtable
-      const airtableData = await fetchMembersFromAirtable(100, offset ?? undefined);
+      const airtableData = await fetchMembersFromAirtable(
+        100,
+        offset ?? undefined
+      );
 
-      // Map Airtable records to our Member interface
-      const allMembers = airtableData.records.map(mapAirtableRecordToMember);
+      // Map Airtable records to our Member interface (async)
+      const allMembers = await Promise.all(
+        airtableData.records.map((record) => mapAirtableRecordToMember(record))
+      );
 
       // Implement pagination
       const startIndex = (page - 1) * limit;
@@ -131,9 +195,10 @@ export async function GET(request: NextRequest) {
           email: "dupontalice@example.com",
           phone: "+33 1234 5678",
           company: "Tech Entreprise",
-          role: "Développeur",
+          role: "Developpeur",
           tokens: 7,
           linkedin: "https://www.linkedin.com/in/dupontalice",
+          image: undefined,
         },
         {
           id: "rec002",
@@ -144,6 +209,7 @@ export async function GET(request: NextRequest) {
           role: "Chef de projet",
           tokens: 12,
           linkedin: "https://www.linkedin.com/in/martinbruno",
+          image: undefined,
         },
         {
           id: "rec003",
@@ -154,6 +220,7 @@ export async function GET(request: NextRequest) {
           role: "Consultant",
           tokens: 5,
           linkedin: "https://www.linkedin.com/in/taibijalil",
+          image: undefined,
         },
       ];
 

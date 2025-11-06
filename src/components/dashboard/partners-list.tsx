@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowUp } from "lucide-react";
 import { Partner } from "@/types/dashboard.types";
 
 export function PartnersList() {
@@ -120,6 +120,16 @@ export function PartnersList() {
           className="w-12 h-12 bg-lime-200 rounded-xl flex items-center justify-center hover:bg-[#B5E547] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           <ChevronRight className="w-5 h-5 text-black" />
+        </button>
+      </div>
+
+      {/* Scroll to top button */}
+      <div className="flex justify-center pt-8">
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="w-12 h-12 bg-lime-200 rounded-full flex items-center justify-center hover:bg-[#B5E547] transition-colors cursor-pointer"
+        >
+          <ArrowUp className="w-5 h-5 text-black" />
         </button>
       </div>
     </div>

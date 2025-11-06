@@ -13,15 +13,15 @@ export default function SignInPage({ searchParams }: SignInPageProps) {
   const getErrorMessage = (errorCode: string) => {
     switch (errorCode) {
       case "invalid-token":
-        return "The magic link is invalid or has expired. Please request a new one.";
+        return "Le lien magique est invalide ou a expire. Veuillez en demander un nouveau.";
       case "missing-token":
-        return "The magic link is missing. Please request a new one.";
+        return "Le lien magique est manquant. Veuillez en demander un nouveau.";
       case "expired":
-        return "The magic link has expired. Please request a new one.";
+        return "Le lien magique a expire. Veuillez en demander un nouveau.";
       case "user-creation-failed":
-        return "Failed to create user account. Please try again.";
+        return "Echec de la creation du compte utilisateur. Veuillez reessayer.";
       default:
-        return "An error occurred during sign-in. Please try again.";
+        return "Une erreur s'est produite lors de la connexion. Veuillez reessayer.";
     }
   };
 

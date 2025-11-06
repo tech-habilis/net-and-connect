@@ -46,7 +46,7 @@ export class ClientUserService {
   static async refreshTokens(): Promise<number | null> {
     try {
       const profile = await this.getProfile();
-      return profile?.user.userData.token ?? null;
+      return profile?.user.userData.tokens ?? null;
     } catch (error) {
       console.error("Error refreshing tokens:", error);
       return null;

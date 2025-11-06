@@ -28,16 +28,16 @@ export default async function ExpertsPage() {
       <div className="relative py-16 px-6">
         <div className="max-w-7xl mx-auto">
           <div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
               NOS <span className="text-lime-200">EXPERTS</span>
             </h1>
-            <p className="text-gray-300 text-lg leading-relaxed">
+            {/* <p className="text-gray-300 text-lg leading-relaxed">
               Lorem ipsum dolor sit amet. Qui exercitationem corporis aut
               eveniet beatae ut distinctio autem. At <br />
               nulla repellat cum nemo provident non obcaecati voluptas. Aut
               dicta quia et omnis consequatur <br />
               vel amet fuga et laborum illum.
-            </p>
+            </p> */}
           </div>
         </div>
       </div>
