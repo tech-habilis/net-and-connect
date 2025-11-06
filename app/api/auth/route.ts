@@ -26,15 +26,25 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get or create user in Airtable
-    const userData = await UserService.getOrCreateUser(verification.email!);
+    // Get user from Airtable (skip creation if not found)
+    const userData = await UserService.findUserByEmail(verification.email!);
 
     if (!userData) {
-      console.error("❌ Failed to get or create user data");
+      console.error("❌ User not found in Airtable:", verification.email);
       return NextResponse.redirect(
-        new URL(`/sign-in?error=user-creation-failed`, request.url)
+        new URL(`/sign-in?error=user-not-found`, request.url)
       );
     }
+
+    // Note: Commenting out automatic user creation as requested
+    // const userData = await UserService.getOrCreateUser(verification.email!);
+
+    // if (!userData) {
+    //   console.error("❌ Failed to get or create user data");
+    //   return NextResponse.redirect(
+    //     new URL(`/sign-in?error=user-creation-failed`, request.url)
+    //   );
+    // }
 
     // Create auth cookie with user data
     const cookieValue = createAuthCookie(verification.email!, userData);

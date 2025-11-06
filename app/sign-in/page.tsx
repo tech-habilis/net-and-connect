@@ -20,6 +20,8 @@ export default function SignInPage({ searchParams }: SignInPageProps) {
         return "Le lien magique a expire. Veuillez en demander un nouveau.";
       case "user-creation-failed":
         return "Echec de la creation du compte utilisateur. Veuillez reessayer.";
+      case "user-not-found":
+        return "Cette adresse email n'est pas enregistrée dans notre système. Veuillez contacter l'administrateur pour créer votre compte.";
       default:
         return "Une erreur s'est produite lors de la connexion. Veuillez reessayer.";
     }
