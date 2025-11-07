@@ -19,7 +19,7 @@ export function ExpertsList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const expertsPerPage = 6;
+  const expertsPerPage = 12;
 
   const handleExpertWebsite = (website?: string) => {
     if (website) {

@@ -42,7 +42,7 @@ export function EventCard({ event, userEmail }: EventCardProps) {
       return `${hours}H${minutes}`;
     };
 
-    return `${formatSingleTime(startDate)} À ${formatSingleTime(endDate)}`;
+    return `${formatSingleTime(startDate)} A ${formatSingleTime(endDate)}`;
   };
 
   const { day, month } = formatEventDate(event.start);
@@ -72,7 +72,7 @@ export function EventCard({ event, userEmail }: EventCardProps) {
             {event.title}
           </h3>
           <div className="text-lime-200 text-xs font-medium mb-1 uppercase">
-            LE {day} {month} À {timeRange.split(" À ")[0]}
+            LE {day} {month} A {timeRange.split(" A ")[0]}
           </div>
           <div className="text-lime-200 text-xs mb-3 flex items-center gap-1">
             <MapPin className="w-3 h-3" />

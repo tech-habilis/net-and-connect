@@ -168,7 +168,7 @@ export function JoinEventModal({
 
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
                   <p className="text-xs text-amber-800">
-                    <strong>Note:</strong> L'inscription à cet evenement coûtera
+                    <strong>Note:</strong> L'inscription a cet evenement coutera
                     1 JTEON de votre solde.
                   </p>
                 </div>

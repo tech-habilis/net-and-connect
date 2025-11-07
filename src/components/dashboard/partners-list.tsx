@@ -10,7 +10,7 @@ export function PartnersList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const partnersPerPage = 8;
+  const partnersPerPage = 16;
 
   const loadPartners = async (page: number = 1) => {
     try {

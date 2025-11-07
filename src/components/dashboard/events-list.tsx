@@ -105,7 +105,7 @@ export function EventsList({ userEmail }: EventsListProps) {
       return `${hours}H${minutes}`;
     };
 
-    return `${formatSingleTime(startDate)} À ${formatSingleTime(endDate)}`;
+    return `${formatSingleTime(startDate)} A ${formatSingleTime(endDate)}`;
   };
 
   if (loading) {
@@ -141,10 +141,10 @@ export function EventsList({ userEmail }: EventsListProps) {
                   </h3>
                   <div className="text-lime-200 text-sm font-medium mb-1 uppercase">
                     LE {formatEventDate(featuredEvent.start).day}{" "}
-                    {formatEventDate(featuredEvent.start).month} À{" "}
+                    {formatEventDate(featuredEvent.start).month} A{" "}
                     {
                       formatTime(featuredEvent.start, featuredEvent.end).split(
-                        " À "
+                        " A "
                       )[0]
                     }
                   </div>
@@ -188,7 +188,7 @@ export function EventsList({ userEmail }: EventsListProps) {
       {allUpcomingEvents.length > 0 && (
         <div>
           <h2 className="text-white text-xl font-bold mb-6 uppercase tracking-wide">
-            <span className="text-white/60">NOS EVENTS</span> À VENIR
+            <span className="text-white/60">NOS EVENTS</span> A VENIR
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {upcomingEvents.map((event: Event) => (

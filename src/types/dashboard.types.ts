@@ -46,5 +46,6 @@ export interface Community {
   email: string;
   phone: string;
   title: string;
+  company?: string;
   image?: string;
 }

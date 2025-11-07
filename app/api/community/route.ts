@@ -14,6 +14,7 @@ interface AirtableRecord {
     email?: string;
     phone?: string;
     title?: string;
+    enterprise?: string[]; // This is a linked record array
     image?: string;
   };
 }
@@ -63,13 +64,53 @@ async function fetchCommunityFromAirtable(
   return data;
 }
 
-function mapAirtableRecordToCommunity(record: AirtableRecord) {
+async function fetchCompanyName(companyId: string): Promise<string> {
+  try {
+    const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/Entreprises/${companyId}`;
+
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${AIRTABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      console.error(`Failed to fetch company ${companyId}:`, response.status);
+      return "";
+    }
+
+    const data = await response.json();
+    return data.fields["Company Name"] || "";
+  } catch (error) {
+    console.error(`Error fetching company ${companyId}:`, error);
+    return "";
+  }
+}
+
+async function mapAirtableRecordToCommunity(record: AirtableRecord): Promise<{
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  title: string;
+  company: string;
+  image: string;
+}> {
+  // Get company name from linked record
+  let companyName = "";
+  if (record.fields.enterprise && record.fields.enterprise.length > 0) {
+    const entrepriseId = record.fields.enterprise[0];
+    companyName = await fetchCompanyName(entrepriseId);
+  }
+
   return {
     id: record.id,
     name: record.fields.name || "",
     email: record.fields.email || "",
     phone: record.fields.phone || "",
     title: record.fields.title || "",
+    company: companyName,
     image: record.fields.image || "",
   };
 }
@@ -103,8 +144,8 @@ export async function GET(request: NextRequest) {
       } while (airtableOffset);
 
       // Map ALL Airtable records to our Community interface
-      const allCommunityMembers = allAirtableRecords.map(
-        mapAirtableRecordToCommunity
+      const allCommunityMembers = await Promise.all(
+        allAirtableRecords.map(mapAirtableRecordToCommunity)
       );
 
       // Implement pagination on the complete dataset
@@ -143,10 +184,11 @@ export async function GET(request: NextRequest) {
       const mockCommunityMembers = [
         {
           id: "rec001",
-          name: "Melane Loïc",
+          name: "Melane Loic",
           email: "melane.loic@catwalks.com",
           phone: "+33 1 23 45 67 89",
           title: "Founder at Catwalks",
+          company: "CATWALKS",
           image:
             "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face",
         },
@@ -156,6 +198,7 @@ export async function GET(request: NextRequest) {
           email: "sophie.martin@catwalks.com",
           phone: "+33 1 23 45 67 90",
           title: "Creative Director",
+          company: "CATWALKS",
           image:
             "https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=400&h=400&fit=crop&crop=face",
         },
@@ -165,6 +208,7 @@ export async function GET(request: NextRequest) {
           email: "alexandre.dubois@catwalks.com",
           phone: "+33 1 23 45 67 91",
           title: "Lead Developer",
+          company: "CATWALKS",
           image:
             "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
         },
@@ -174,6 +218,7 @@ export async function GET(request: NextRequest) {
           email: "marie.petit@catwalks.com",
           phone: "+33 1 23 45 67 92",
           title: "UX Designer",
+          company: "CATWALKS",
           image:
             "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face",
         },
@@ -183,6 +228,7 @@ export async function GET(request: NextRequest) {
           email: "thomas.bernard@catwalks.com",
           phone: "+33 1 23 45 67 93",
           title: "Product Manager",
+          company: "CATWALKS",
           image:
             "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face",
         },
@@ -192,6 +238,7 @@ export async function GET(request: NextRequest) {
           email: "camille.rousseau@catwalks.com",
           phone: "+33 1 23 45 67 94",
           title: "Marketing Director",
+          company: "CATWALKS",
           image:
             "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop&crop=face",
         },
@@ -201,6 +248,7 @@ export async function GET(request: NextRequest) {
           email: "lucas.moreau@catwalks.com",
           phone: "+33 1 23 45 67 95",
           title: "Sales Manager",
+          company: "CATWALKS",
           image:
             "https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?w=400&h=400&fit=crop&crop=face",
         },
@@ -210,6 +258,7 @@ export async function GET(request: NextRequest) {
           email: "emma.leroy@catwalks.com",
           phone: "+33 1 23 45 67 96",
           title: "Community Manager",
+          company: "CATWALKS",
           image:
             "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=face",
         },

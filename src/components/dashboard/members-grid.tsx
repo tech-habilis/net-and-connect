@@ -20,7 +20,7 @@ export function MembersGrid() {
   >(null);
   const [fallback, setFallback] = useState(false);
 
-  const membersPerPage = 8; // Suitable for grid layout
+  const membersPerPage = 16; // Suitable for grid layout
 
   const loadMembers = async (page: number = 1) => {
     setLoading(true);

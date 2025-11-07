@@ -142,7 +142,7 @@ export async function GET(request: NextRequest) {
       const mockExperts = [
         {
           id: "rec001",
-          name: "MELANE LOÏC",
+          name: "MELANE LOIC",
           phone: "+33613269554",
           email: "loic.melane@gmail.com",
           description:

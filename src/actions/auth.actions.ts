@@ -44,7 +44,7 @@ export async function signInAction(data: SignInFormData) {
     return {
       success: false,
       message:
-        "Une erreur s'est produite lors de l'envoi du lien. Veuillez réessayer.",
+        "Une erreur s'est produite lors de l'envoi du lien. Veuillez reessayer.",
     };
   }
 }

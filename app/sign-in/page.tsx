@@ -21,7 +21,7 @@ export default function SignInPage({ searchParams }: SignInPageProps) {
       case "user-creation-failed":
         return "Echec de la creation du compte utilisateur. Veuillez reessayer.";
       case "user-not-found":
-        return "Cette adresse email n'est pas enregistrée dans notre système. Veuillez contacter l'administrateur pour créer votre compte.";
+        return "Cette adresse email n'est pas enregistree dans notre systeme. Veuillez contacter l'administrateur pour creer votre compte.";
       default:
         return "Une erreur s'est produite lors de la connexion. Veuillez reessayer.";
     }

@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { Community } from "@/types/dashboard.types";
-import Image from "next/image";
 import { ArrowUpRight, ChevronLeft, ChevronRight, ArrowUp } from "lucide-react";
 
 export function CommunityList() {
@@ -11,7 +10,7 @@ export function CommunityList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const membersPerPage = 8;
+  const membersPerPage = 16;
 
   const loadCommunity = async (page: number = 1) => {
     try {
@@ -92,16 +91,12 @@ export function CommunityList() {
             {/* Dark overlay for better text readability */}
             <div className="absolute inset-0 bg-black/30" />
 
-            {/* CATWALKS Brand Overlay */}
-            <div className="absolute top-4 right-4">
-              <Image
-                src="/assets/catwalks.png"
-                alt="CATWALKS"
-                width={130}
-                height={20}
-                unoptimized
-              />
-            </div>
+            {/* Company Badge */}
+            {member.company && (
+              <div className="absolute top-4 right-4 text-white rounded text-md font-medium uppercase">
+                {member.company}
+              </div>
+            )}
 
             {/* Member Info at Bottom */}
             <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
