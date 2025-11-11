@@ -85,7 +85,7 @@ export function EventCard({ event, userEmail }: EventCardProps) {
             }}
           />
         </div>
-        {isEventActive && (
+        {/* {isEventActive && ( */}
           <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <button
               onClick={(e) => {
@@ -99,7 +99,7 @@ export function EventCard({ event, userEmail }: EventCardProps) {
               <ArrowUpRight className="w-3 h-3" />
             </button>
           </div>
-        )}
+        {/* )} */}
       </div>
 
       {/* Join Event Modal */}

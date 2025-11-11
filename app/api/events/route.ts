@@ -255,119 +255,20 @@ export async function GET(request: NextRequest) {
     } catch (lumaError) {
       console.error("LUMA fetch error:", lumaError);
 
-      // Fallback to mock data if LUMA fails
-      const mockEvents: NormalizedEvent[] = [
-        {
-          id: "e1",
-          title: "Afterwork business",
-          description: "Soiree networking pour entrepreneurs et dirigeants",
-          start: "2025-10-29T18:00:00.000Z",
-          end: "2025-10-29T21:00:00.000Z",
-          location: "Boulogne, Paris",
-          url: "https://lu.ma/afterwork-business-29",
-          timezone: "Europe/Paris",
-        },
-        {
-          id: "e2",
-          title: "Afterwork business",
-          description: "Soiree networking pour entrepreneurs et dirigeants",
-          start: "2025-11-05T18:00:00.000Z",
-          end: "2025-11-05T21:00:00.000Z",
-          location: "Boulogne, Paris",
-          url: "https://lu.ma/afterwork-business-05",
-          timezone: "Europe/Paris",
-        },
-        {
-          id: "e3",
-          title: "Afterwork business",
-          description: "Soiree networking pour entrepreneurs et dirigeants",
-          start: "2025-11-12T18:00:00.000Z",
-          end: "2025-11-12T21:00:00.000Z",
-          location: "Boulogne, Paris",
-          url: "https://lu.ma/afterwork-business-12",
-          timezone: "Europe/Paris",
-        },
-        {
-          id: "e4",
-          title: "Afterwork business",
-          description: "Soiree networking pour entrepreneurs et dirigeants",
-          start: "2025-11-19T18:00:00.000Z",
-          end: "2025-11-19T21:00:00.000Z",
-          location: "Boulogne, Paris",
-          url: "https://lu.ma/afterwork-business-19",
-          timezone: "Europe/Paris",
-        },
-        {
-          id: "e5",
-          title: "Afterwork business",
-          description: "Soiree networking pour entrepreneurs et dirigeants",
-          start: "2025-11-26T18:00:00.000Z",
-          end: "2025-11-26T21:00:00.000Z",
-          location: "Boulogne, Paris",
-          url: "https://lu.ma/afterwork-business-26",
-          timezone: "Europe/Paris",
-        },
-      ];
-
-      const mockFinishedEvents: NormalizedEvent[] = [
-        {
-          id: "f1",
-          title: "Afterwork business",
-          description: "Soiree networking pour entrepreneurs et dirigeants",
-          start: "2025-10-21T18:00:00.000Z",
-          end: "2025-10-21T21:00:00.000Z",
-          location: "Boulogne, Paris",
-          url: "https://lu.ma/afterwork-business-21",
-          timezone: "Europe/Paris",
-        },
-        {
-          id: "f2",
-          title: "Afterwork business",
-          description: "Soiree networking pour entrepreneurs et dirigeants",
-          start: "2025-10-14T18:00:00.000Z",
-          end: "2025-10-14T21:00:00.000Z",
-          location: "Boulogne, Paris",
-          url: "https://lu.ma/afterwork-business-14",
-          timezone: "Europe/Paris",
-        },
-        {
-          id: "f3",
-          title: "Afterwork business",
-          description: "Soiree networking pour entrepreneurs et dirigeants",
-          start: "2025-10-07T18:00:00.000Z",
-          end: "2025-10-07T21:00:00.000Z",
-          location: "Boulogne, Paris",
-          url: "https://lu.ma/afterwork-business-07",
-          timezone: "Europe/Paris",
-        },
-        {
-          id: "f4",
-          title: "Afterwork business",
-          description: "Soiree networking pour entrepreneurs et dirigeants",
-          start: "2025-09-30T18:00:00.000Z",
-          end: "2025-09-30T21:00:00.000Z",
-          location: "Boulogne, Paris",
-          url: "https://lu.ma/afterwork-business-30",
-          timezone: "Europe/Paris",
-        },
-      ];
-
-      const featured = mockEvents[0] || null;
-      const upcoming = mockEvents.slice(1);
-
+      // Return empty data when LUMA fails
       return NextResponse.json({
-        featured,
-        upcoming: upcoming.slice(0, 4),
-        finished: mockFinishedEvents.slice(0, 4),
+        featured: null,
+        upcoming: [],
+        finished: [],
         pagination: {
           page,
           limit,
-          total: upcoming.length + mockFinishedEvents.length,
-          totalPages: 1,
+          total: 0,
+          totalPages: 0,
           hasNext: false,
           hasPrev: false,
         },
-        fallback: true, // Indicates this is fallback data
+        error: "Service temporarily unavailable",
       });
     }
   } catch (error) {

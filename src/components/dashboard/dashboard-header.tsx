@@ -30,11 +30,11 @@ export function DashboardHeader() {
       path: "/partners",
       active: pathname === "/partners",
     },
-    {
-      label: "NOTRE COMMUNAUTE",
-      path: "/community",
-      active: pathname === "/community",
-    },
+    // {
+    //   label: "NOTRE COMMUNAUTE",
+    //   path: "/community",
+    //   active: pathname === "/community",
+    // },
   ];
 
   const handleSignOut = async () => {

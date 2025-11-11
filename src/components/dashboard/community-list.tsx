@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Community } from "@/types/dashboard.types";
 import { ArrowUpRight, ChevronLeft, ChevronRight, ArrowUp } from "lucide-react";
+import { CardGridSkeleton, EmptyState } from "@/components/ui/skeletons";
 
 export function CommunityList() {
   const [communityMembers, setCommunityMembers] = useState<Community[]>([]);
@@ -41,6 +42,7 @@ export function CommunityList() {
       setTotalPages(totalPagesFromAPI);
     } catch (error) {
       console.error("Failed to load community:", error);
+      setCommunityMembers([]);
     } finally {
       setLoading(false);
     }
@@ -59,10 +61,14 @@ export function CommunityList() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-lime-200"></div>
+      <div className="space-y-8">
+        <CardGridSkeleton count={16} />
       </div>
     );
+  }
+
+  if (communityMembers.length === 0) {
+    return <EmptyState message="Aucun membre de la communauté disponible" />;
   }
 
   return (
@@ -137,23 +143,25 @@ export function CommunityList() {
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-end gap-2">
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1 || loading}
-          className="w-12 h-12 bg-gray-700 rounded-xl flex items-center justify-center hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-        >
-          <ChevronLeft className="w-5 h-5 text-white" />
-        </button>
+      {totalPages > 1 && (
+        <div className="flex items-center justify-end gap-2">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1 || loading}
+            className="w-12 h-12 bg-gray-700 rounded-xl flex items-center justify-center hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          >
+            <ChevronLeft className="w-5 h-5 text-white" />
+          </button>
 
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages || loading}
-          className="w-12 h-12 bg-lime-200 rounded-xl flex items-center justify-center hover:bg-[#B5E547] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-        >
-          <ChevronRight className="w-5 h-5 text-black" />
-        </button>
-      </div>
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages || loading}
+            className="w-12 h-12 bg-lime-200 rounded-xl flex items-center justify-center hover:bg-[#B5E547] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          >
+            <ChevronRight className="w-5 h-5 text-black" />
+          </button>
+        </div>
+      )}
 
       {/* Scroll to top button */}
       <div className="flex justify-center pt-8">
