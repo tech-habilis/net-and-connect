@@ -128,82 +128,18 @@ export async function GET(request: NextRequest) {
     } catch (airtableError) {
       console.error("Airtable fetch error:", airtableError);
 
-      // Fallback to mock data if Airtable fails
-      const mockPartners = [
-        {
-          id: "rec001",
-          title: "NIKE",
-          image:
-            "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop&crop=center",
-        },
-        {
-          id: "rec002",
-          title: "FEED",
-          image:
-            "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop&crop=center",
-        },
-        {
-          id: "rec003",
-          title: "ADIDAS",
-          image:
-            "https://images.unsplash.com/photo-1544966503-7cc5ac882d5e?w=400&h=300&fit=crop&crop=center",
-        },
-        {
-          id: "rec004",
-          title: "DECATHLON",
-          image:
-            "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center",
-        },
-        {
-          id: "rec005",
-          title: "ADIDAS",
-          image:
-            "https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=400&h=300&fit=crop&crop=center",
-        },
-        {
-          id: "rec006",
-          title: "DECATHLON",
-          image:
-            "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=300&fit=crop&crop=center",
-        },
-        {
-          id: "rec007",
-          title: "FEED",
-          image:
-            "https://images.unsplash.com/photo-1556742059-2414c0e0b740?w=400&h=300&fit=crop&crop=center",
-        },
-        {
-          id: "rec008",
-          title: "NIKE",
-          image:
-            "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=300&fit=crop&crop=center",
-        },
-      ];
-
-      // Sort mock data A→Z by title
-      const sortedPartners = [...mockPartners].sort((a, b) =>
-        a.title.localeCompare(b.title, "fr", { sensitivity: "base" })
-      );
-
-      // Paginate mock data
-      const startIndex = (page - 1) * limit;
-      const endIndex = startIndex + limit;
-      const paginatedPartners = sortedPartners.slice(startIndex, endIndex);
-
-      const totalCount = sortedPartners.length;
-      const totalPages = Math.ceil(totalCount / limit);
-
+      // Return empty data when Airtable fails
       return NextResponse.json({
-        partners: paginatedPartners,
+        partners: [],
         pagination: {
           currentPage: page,
-          totalPages,
-          totalCount,
-          hasNextPage: page < totalPages,
-          hasPrevPage: page > 1,
+          totalPages: 0,
+          totalCount: 0,
+          hasNextPage: false,
+          hasPrevPage: false,
           limit,
         },
-        fallback: true, // Indicates this is fallback data
+        error: "Service temporarily unavailable",
       });
     }
   } catch (error) {

@@ -138,100 +138,18 @@ export async function GET(request: NextRequest) {
     } catch (airtableError) {
       console.error("Airtable fetch error:", airtableError);
 
-      // Fallback to mock data if Airtable fails
-      const mockExperts = [
-        {
-          id: "rec001",
-          name: "MELANE LOIC",
-          phone: "+33613269554",
-          email: "loic.melane@gmail.com",
-          description:
-            "Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised.",
-          image:
-            "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop&crop=face",
-          title: "FOUNDER AT CATWALKS",
-        },
-        {
-          id: "rec002",
-          name: "SOPHIE MARTIN",
-          phone: "+33613269555",
-          email: "sophie.martin@gmail.com",
-          description:
-            "Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised.",
-          image:
-            "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=600&fit=crop&crop=face",
-          title: "FOUNDER AT CATWALKS",
-        },
-        {
-          id: "rec003",
-          name: "JULIEN DUPONT",
-          phone: "+33613269556",
-          email: "julien.dupont@gmail.com",
-          description:
-            "Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised.",
-          image:
-            "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=600&fit=crop&crop=face",
-          title: "FOUNDER AT CATWALKS",
-        },
-        {
-          id: "rec004",
-          name: "MARIE BERNARD",
-          phone: "+33613269557",
-          email: "marie.bernard@gmail.com",
-          description:
-            "Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised.",
-          image:
-            "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=600&fit=crop&crop=face",
-          title: "FOUNDER AT CATWALKS",
-        },
-        {
-          id: "rec005",
-          name: "THOMAS RICHARD",
-          phone: "+33613269558",
-          email: "thomas.richard@gmail.com",
-          description:
-            "Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised.",
-          image:
-            "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=600&fit=crop&crop=face",
-          title: "FOUNDER AT CATWALKS",
-        },
-        {
-          id: "rec006",
-          name: "CLAIRE DUBOIS",
-          phone: "+33613269559",
-          email: "claire.dubois@gmail.com",
-          description:
-            "Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised.",
-          image:
-            "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=600&fit=crop&crop=face",
-          title: "FOUNDER AT CATWALKS",
-        },
-      ];
-
-      // Sort mock data A→Z by name
-      const sortedExperts = [...mockExperts].sort((a, b) =>
-        a.name.localeCompare(b.name, "fr", { sensitivity: "base" })
-      );
-
-      // Paginate mock data
-      const startIndex = (page - 1) * limit;
-      const endIndex = startIndex + limit;
-      const paginatedExperts = sortedExperts.slice(startIndex, endIndex);
-
-      const totalCount = sortedExperts.length;
-      const totalPages = Math.ceil(totalCount / limit);
-
+      // Return empty data when Airtable fails
       return NextResponse.json({
-        experts: paginatedExperts,
+        experts: [],
         pagination: {
           currentPage: page,
-          totalPages,
-          totalCount,
-          hasNextPage: page < totalPages,
-          hasPrevPage: page > 1,
+          totalPages: 0,
+          totalCount: 0,
+          hasNextPage: false,
+          hasPrevPage: false,
           limit,
         },
-        fallback: true, // Indicates this is fallback data
+        error: "Service temporarily unavailable",
       });
     }
   } catch (error) {

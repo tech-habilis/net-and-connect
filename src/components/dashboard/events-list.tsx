@@ -11,6 +11,7 @@ import {
 import { Event } from "@/types/dashboard.types";
 import { EventCard } from "./event-card";
 import { JoinEventModal } from "./join-event-modal";
+import { CardGridSkeleton, EmptyState } from "@/components/ui/skeletons";
 
 interface EventsListProps {
   userEmail?: string;
@@ -48,6 +49,9 @@ export function EventsList({ userEmail }: EventsListProps) {
       setAllFinishedEvents(data.finished || []);
     } catch (error) {
       console.error("Failed to load events:", error);
+      setFeaturedEvent(null);
+      setAllUpcomingEvents([]);
+      setAllFinishedEvents([]);
     } finally {
       setLoading(false);
     }
@@ -110,10 +114,34 @@ export function EventsList({ userEmail }: EventsListProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-lime-200"></div>
+      <div className="space-y-12">
+        {/* Featured Event Skeleton */}
+        <div>
+          <h2 className="text-white text-xl font-bold mb-6 uppercase tracking-wide">
+            <span className="text-white/60">NOTRE EVENT</span> DU MOMENT
+          </h2>
+          <div className="relative rounded-2xl overflow-hidden aspect-[16/9] bg-gray-800">
+            <div className="w-full h-full bg-gray-700 animate-pulse" />
+          </div>
+        </div>
+        {/* Upcoming Events Skeleton */}
+        <div>
+          <h2 className="text-white text-xl font-bold mb-6 uppercase tracking-wide">
+            <span className="text-white/60">NOS EVENTS</span> A VENIR
+          </h2>
+          <CardGridSkeleton count={4} cardType="event" />
+        </div>
       </div>
     );
+  }
+
+  const hasAnyEvents =
+    featuredEvent ||
+    allUpcomingEvents.length > 0 ||
+    allFinishedEvents.length > 0;
+
+  if (!hasAnyEvents) {
+    return <EmptyState message="Aucun événement disponible" />;
   }
 
   return (
@@ -261,6 +289,13 @@ export function EventsList({ userEmail }: EventsListProps) {
           )}
         </div>
       )}
+
+      {/* Show empty state if no events in specific sections */}
+      {!featuredEvent &&
+        allUpcomingEvents.length === 0 &&
+        allFinishedEvents.length === 0 && (
+          <EmptyState message="Aucun événement disponible" />
+        )}
 
       {/* Scroll to top button */}
       <div className="flex justify-center pt-8">

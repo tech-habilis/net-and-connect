@@ -5,6 +5,7 @@ export interface Member {
   phone: string;
   company: string;
   role: string;
+  organizationRole: string;
   tokens: number;
   linkedin?: string;
   image?: string;

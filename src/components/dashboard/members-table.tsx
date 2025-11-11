@@ -23,6 +23,7 @@ import {
   DashboardService,
   MembersPaginationResponse,
 } from "@/services/dashboard.service";
+import { TableRowSkeleton, EmptyState } from "@/components/ui/skeletons";
 
 const dashboardService = new DashboardService();
 
@@ -45,6 +46,7 @@ export function MembersTable() {
       setFallback(data.fallback || false);
     } catch (error) {
       console.error("Failed to load members:", error);
+      setMembers([]);
     } finally {
       setLoading(false);
     }
@@ -67,8 +69,80 @@ export function MembersTable() {
         <CardHeader className="pb-4 flex-shrink-0">
           <CardTitle className="text-lg font-medium">Membres</CardTitle>
         </CardHeader>
+        <CardContent className="pt-0 flex flex-col h-full">
+          <div className="flex flex-col flex-1">
+            <div className="overflow-x-auto">
+              <div className="min-w-[600px]">
+                <Table>
+                  <TableHeader className="bg-white">
+                    <TableRow className="border-b border-gray-200">
+                      <TableHead className="text-xs font-medium text-gray-500 uppercase tracking-wider pb-3 min-w-[150px]">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="text-sm"
+                            style={{ color: "#77A600" }}
+                          >
+                            T
+                          </span>
+                          Membre
+                        </div>
+                      </TableHead>
+                      <TableHead className="text-xs font-medium text-gray-500 uppercase tracking-wider pb-3 min-w-[200px]">
+                        <div className="flex items-center gap-2">
+                          <AtSign
+                            className="h-4 w-4"
+                            style={{ color: "#77A600" }}
+                          />
+                          Email
+                        </div>
+                      </TableHead>
+                      <TableHead className="text-xs font-medium text-gray-500 uppercase tracking-wider pb-3 min-w-[120px]">
+                        <div className="flex items-center gap-2">
+                          <Link
+                            className="h-4 w-4"
+                            style={{ color: "#77A600" }}
+                          />
+                          LinkedIn
+                        </div>
+                      </TableHead>
+                      <TableHead className="text-xs font-medium text-gray-500 uppercase tracking-wider pb-3 min-w-[130px]">
+                        <div className="flex items-center gap-2">
+                          <Phone
+                            className="h-4 w-4"
+                            style={{ color: "#77A600" }}
+                          />
+                          Phone
+                        </div>
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {Array.from({ length: 5 }).map((_, index) => (
+                      <TableRowSkeleton key={index} />
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (members.length === 0) {
+    return (
+      <Card
+        className="h-full border-none flex flex-col"
+        style={{ borderRadius: 0 }}
+      >
+        <CardHeader className="pb-4 flex-shrink-0">
+          <CardTitle className="text-lg font-medium text-gray-900">
+            Membres
+          </CardTitle>
+        </CardHeader>
         <CardContent className="flex-1 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#A4D65E]"></div>
+          <EmptyState message="Aucun membre disponible" />
         </CardContent>
       </Card>
     );
@@ -186,7 +260,7 @@ export function MembersTable() {
         </div>
 
         {/* Pagination - Sticky at bottom */}
-        {pagination && (
+        {pagination && pagination.totalPages > 1 && (
           <div className="flex items-center justify-between pt-3 pb-2 border-t border-gray-200 mt-auto">
             <div className="text-sm text-gray-500 flex items-center gap-2">
               Pages {pagination.currentPage} of {pagination.totalPages}

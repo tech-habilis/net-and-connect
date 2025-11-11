@@ -180,117 +180,18 @@ export async function GET(request: NextRequest) {
     } catch (airtableError) {
       console.error("Airtable fetch error:", airtableError);
 
-      // Fallback to mock data if Airtable fails
-      const mockCommunityMembers = [
-        {
-          id: "rec001",
-          name: "Melane Loic",
-          email: "melane.loic@catwalks.com",
-          phone: "+33 1 23 45 67 89",
-          title: "Founder at Catwalks",
-          company: "CATWALKS",
-          image:
-            "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face",
-        },
-        {
-          id: "rec002",
-          name: "Sophie Martin",
-          email: "sophie.martin@catwalks.com",
-          phone: "+33 1 23 45 67 90",
-          title: "Creative Director",
-          company: "CATWALKS",
-          image:
-            "https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=400&h=400&fit=crop&crop=face",
-        },
-        {
-          id: "rec003",
-          name: "Alexandre Dubois",
-          email: "alexandre.dubois@catwalks.com",
-          phone: "+33 1 23 45 67 91",
-          title: "Lead Developer",
-          company: "CATWALKS",
-          image:
-            "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
-        },
-        {
-          id: "rec004",
-          name: "Marie Petit",
-          email: "marie.petit@catwalks.com",
-          phone: "+33 1 23 45 67 92",
-          title: "UX Designer",
-          company: "CATWALKS",
-          image:
-            "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face",
-        },
-        {
-          id: "rec005",
-          name: "Thomas Bernard",
-          email: "thomas.bernard@catwalks.com",
-          phone: "+33 1 23 45 67 93",
-          title: "Product Manager",
-          company: "CATWALKS",
-          image:
-            "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face",
-        },
-        {
-          id: "rec006",
-          name: "Camille Rousseau",
-          email: "camille.rousseau@catwalks.com",
-          phone: "+33 1 23 45 67 94",
-          title: "Marketing Director",
-          company: "CATWALKS",
-          image:
-            "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop&crop=face",
-        },
-        {
-          id: "rec007",
-          name: "Lucas Moreau",
-          email: "lucas.moreau@catwalks.com",
-          phone: "+33 1 23 45 67 95",
-          title: "Sales Manager",
-          company: "CATWALKS",
-          image:
-            "https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?w=400&h=400&fit=crop&crop=face",
-        },
-        {
-          id: "rec008",
-          name: "Emma Leroy",
-          email: "emma.leroy@catwalks.com",
-          phone: "+33 1 23 45 67 96",
-          title: "Community Manager",
-          company: "CATWALKS",
-          image:
-            "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=face",
-        },
-      ];
-
-      // Sort mock data A→Z by name
-      const sortedCommunityMembers = [...mockCommunityMembers].sort((a, b) =>
-        a.name.localeCompare(b.name, "fr", { sensitivity: "base" })
-      );
-
-      // Paginate mock data
-      const startIndex = (page - 1) * limit;
-      const endIndex = startIndex + limit;
-      const paginatedCommunityMembers = sortedCommunityMembers.slice(
-        startIndex,
-        endIndex
-      );
-
-      const totalCount = sortedCommunityMembers.length;
-      const totalPages = Math.ceil(totalCount / limit);
-
+      // Return empty data when Airtable fails
       return NextResponse.json({
-        community: paginatedCommunityMembers,
+        community: [],
         pagination: {
           currentPage: page,
-          totalPages,
-          totalCount,
-          hasNextPage: page < totalPages,
-          hasPrevPage: page > 1,
+          totalPages: 0,
+          totalCount: 0,
+          hasNextPage: false,
+          hasPrevPage: false,
           limit,
         },
-        fallback: true, // Indicates this is fallback data
+        error: "Service temporarily unavailable",
       });
     }
   } catch (error) {
