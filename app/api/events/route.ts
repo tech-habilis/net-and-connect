@@ -30,7 +30,11 @@ interface LumaEventData {
 interface LumaEventEntry {
   api_id: string;
   event: LumaEventData;
-  tags: string[];
+  tags: Array<{
+    id: string;
+    api_id: string;
+    name: string;
+  }>;
 }
 
 interface LumaResponse {
@@ -117,7 +121,9 @@ async function fetchEventsFromLuma(
   const normalizedEvents: NormalizedEvent[] = data.entries
     .filter((entry) => {
       // Exclude events that have 'ENTERPRISE' in their tags
-      return !entry.tags || !entry.tags.includes("ENTERPRISE");
+      return (
+        !entry.tags || !entry.tags.some((tag) => tag.name === "ENTERPRISE")
+      );
     })
     .map((entry) => {
       const event = entry.event;
