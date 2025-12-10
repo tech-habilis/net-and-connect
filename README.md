@@ -95,3 +95,4 @@ This project follows SOLID principles and clean code practices with:
 ---
 
 Built with ❤️ for the padel community
+
