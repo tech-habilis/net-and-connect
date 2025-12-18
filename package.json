@@ -7,7 +7,7 @@
     "build": "next build --turbopack",
     "start": "next start -p 40020"
   },
-   "config": {
+  "config": {
     "npm": {
       "legacy-peer-deps": true
     }
@@ -28,15 +28,15 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.544.0",
-    "next": "15.5.7",
+    "next": "15.5.9",
     "next-auth": "^5.0.0-beta.29",
     "nodemailer": "^6.10.1",
     "prisma": "^6.16.3",
     "react": "19.2.1",
     "react-dom": "19.2.1",
     "react-hook-form": "^7.63.0",
-    "react-server-dom-turbopack": "^19.2.1",
-    "react-server-dom-webpack": "^19.2.1",
+    "react-server-dom-turbopack": "19.2.2",
+    "react-server-dom-webpack": "19.2.2",
     "resend": "^6.1.2",
     "scheduler": "^0.27.0",
     "tailwind-merge": "^3.3.1",
