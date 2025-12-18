@@ -3,10 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Mail } from "lucide-react";
-import Image from "next/image";
+
 import { signInSchema, type SignInFormData } from "@/lib/schemas/auth.schema";
 import { signInAction } from "@/actions/auth.actions";
 
@@ -37,6 +34,7 @@ export function SignInForm() {
         setError(result.message);
       }
     } catch (error) {
+      console.error("Form submission error:", error);
       setError("Failed to send magic link. Please try again.");
     } finally {
       setIsLoading(false);
@@ -44,7 +42,7 @@ export function SignInForm() {
   };
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)}>
+    <div>
       {/* Email input container */}
       <div
         className="w-full mb-6 backdrop-blur-sm p-4 md:p-6 lg:p-8 rounded-2xl border border-gray-600/50 md:px-6 md:py-8 lg:px-9 lg:py-12 lg:min-w-[470px]"
@@ -92,13 +90,26 @@ export function SignInForm() {
 
         {/* Sign in button */}
         <button
-          type="submit"
+          type="button"
+          onClick={async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            // Trigger form validation
+            const isValid = await form.trigger();
+            if (!isValid) {
+              return;
+            }
+
+            const data = form.getValues();
+            await onSubmit(data);
+          }}
           disabled={isLoading}
           className="w-full cursor-pointer bg-[#DDFF80] hover:bg-[#D4F573] text-black font-bold py-3 md:py-4 px-6 rounded-md transition-all duration-200 flex items-center justify-center text-xs md:text-lg tracking-wide mt-8 md:mt-12 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? "ENVOI EN COURS..." : "ENVOYER MON LIEN DE CONNEXION"}
         </button>
       </div>
-    </form>
+    </div>
   );
 }
